@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import argparse
 import logging
+import sys
 import time
 from datetime import datetime, time as dt_time
 from pathlib import Path
@@ -56,6 +58,19 @@ def is_market_open(current_time: datetime) -> bool:
     )
 
 
+def is_market_close_warning_time(current_time: datetime) -> bool:
+    """Return True when it is 3:55pm EST to 4:00pm EST on a weekday."""
+    return (
+        current_time.weekday() < 5
+        and dt_time(15, 55) <= current_time.time() < MARKET_CLOSE
+    )
+
+
+def is_market_closed_for_day(current_time: datetime) -> bool:
+    """Return True when the market has closed for the current weekday."""
+    return current_time.weekday() < 5 and current_time.time() >= MARKET_CLOSE
+
+
 def send_telegram_message(bot, chat_id: str, text: str, logger: logging.Logger | None = None) -> bool:
     """Send a Telegram message using the provided Bot instance.
 
@@ -74,7 +89,7 @@ def send_telegram_message(bot, chat_id: str, text: str, logger: logging.Logger |
         return False
 
 
-def run_trading_loop() -> None:
+def run_trading_loop(test_close: bool = False) -> None:
     """Main trading loop that polls signals and places orders every 5 minutes."""
     validate_config()
     logger = setup_logger()
@@ -98,9 +113,44 @@ def run_trading_loop() -> None:
             logger.info("python-telegram-bot not installed; skipping Telegram notifications")
 
     logger.info("Starting trading loop")
+    close_warning_sent = False
+
+    if test_close:
+        logger.info("Market close test mode active: simulating 3:55pm warning and 4:00pm shutdown.")
+        warning_msg = "⚠️ Market closing in 5 minutes!"
+        logger.info(warning_msg)
+        if telegram_bot is not None:
+            send_telegram_message(telegram_bot, TELEGRAM_CHAT_ID, warning_msg, logger=logger)
+
+        shutdown_msg = (
+            "🔴 Market closed for the day. Bot is shutting down. "
+            "Check Alpaca for today's positions."
+        )
+        logger.info("Market closed for the day. Bot shutting down.")
+        if telegram_bot is not None:
+            send_telegram_message(telegram_bot, TELEGRAM_CHAT_ID, shutdown_msg, logger=logger)
+        sys.exit(0)
 
     while True:
         current_time = datetime.now(MARKET_TZ)
+
+        if is_market_closed_for_day(current_time):
+            shutdown_msg = (
+                "🔴 Market closed for the day. Bot is shutting down. "
+                "Check Alpaca for today's positions."
+            )
+            logger.info("Market closed for the day. Bot shutting down.")
+            if telegram_bot is not None:
+                send_telegram_message(telegram_bot, TELEGRAM_CHAT_ID, shutdown_msg, logger=logger)
+            sys.exit(0)
+
+        if is_market_close_warning_time(current_time) and not close_warning_sent:
+            warning_msg = "⚠️ Market closing in 5 minutes!"
+            logger.info(warning_msg)
+            if telegram_bot is not None:
+                send_telegram_message(telegram_bot, TELEGRAM_CHAT_ID, warning_msg, logger=logger)
+            close_warning_sent = True
+
         if not is_market_open(current_time):
             logger.info("Market is closed. Sleeping until next check.")
             time.sleep(SLEEP_SECONDS)
@@ -229,4 +279,11 @@ def run_trading_loop() -> None:
 
 
 if __name__ == "__main__":
-    run_trading_loop()
+    parser = argparse.ArgumentParser(description="Run the trading bot or simulate market close notifications.")
+    parser.add_argument(
+        "--test-close",
+        action="store_true",
+        help="Run a market close simulation: 3:55pm warning and 4:00pm shutdown.",
+    )
+    args = parser.parse_args()
+    run_trading_loop(test_close=args.test_close)
