@@ -44,6 +44,8 @@ SYMBOLS: List[str] = [
     "NIO",
     "HOOD",
     "PYPL",
+    "ROKU",
+]
 
 
 def fetch_historical_data(
