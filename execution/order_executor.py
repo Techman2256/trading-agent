@@ -19,10 +19,18 @@ class OrderExecutor:
             raise EnvironmentError(
                 "ALPACA_API_KEY, ALPACA_SECRET_KEY, and ALPACA_BASE_URL must be set"
             )
+        # Normalize ALPACA_BASE_URL: remove any trailing slash and any trailing '/v2'
+        # because `alpaca_trade_api.REST(..., api_version='v2')` will append the API
+        # version path itself. Passing a base URL that already contains '/v2'
+        # results in a duplicated '/v2/v2' in requests.
+        base = ALPACA_BASE_URL.rstrip('/')
+        if base.endswith("/v2"):
+            base = base[:-3]
+
         return tradeapi.REST(
             ALPACA_API_KEY,
             ALPACA_SECRET_KEY,
-            ALPACA_BASE_URL,
+            base,
             api_version="v2",
         )
 

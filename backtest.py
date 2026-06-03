@@ -7,7 +7,7 @@ from typing import Dict, List
 import pandas as pd
 
 from data.market_data import SYMBOLS, fetch_historical_data
-from strategy.rsi_strategy import calculate_rsi
+from strategy.rsi_strategy import get_signal_details
 
 INITIAL_CAPITAL = 100_000
 RISK_PER_TRADE = 0.02
@@ -34,11 +34,9 @@ def calculate_max_drawdown(equity_curve: List[float]) -> float:
 
 
 def backtest_symbol(symbol: str) -> List[TradeResult]:
-    """Backtest the RSI strategy for one symbol and return closed trades."""
+    """Backtest the strategy for one symbol and return closed trades."""
     data = fetch_historical_data(symbol, period="1y", interval="1d")
-    data = data.copy()
-    data["rsi"] = calculate_rsi(data)
-    data = data.dropna(subset=["rsi"]).reset_index()
+    data = data.copy().reset_index()
 
     trades: List[TradeResult] = []
     position_qty = 0
@@ -47,21 +45,18 @@ def backtest_symbol(symbol: str) -> List[TradeResult]:
     capital_per_trade = INITIAL_CAPITAL * RISK_PER_TRADE
 
     for idx in range(len(data) - 1):
-        today = data.loc[idx]
-        tomorrow = data.loc[idx + 1]
-        signal = "HOLD"
-        if today["rsi"] < 30:
-            signal = "BUY"
-        elif today["rsi"] > 70:
-            signal = "SELL"
+        day_data = data.iloc[: idx + 1]
+        tomorrow = data.iloc[idx + 1]
+        details = get_signal_details(day_data)
+        signal = details.signal
 
-        if signal == "BUY" and position_qty == 0:
+        if signal == "STRONG BUY" and position_qty == 0:
             qty = math.floor(capital_per_trade / tomorrow["Close"])
             if qty > 0:
                 position_qty = qty
                 entry_price = float(tomorrow["Close"])
                 entry_date = tomorrow["Date"]
-        elif signal == "SELL" and position_qty > 0:
+        elif signal == "STRONG SELL" and position_qty > 0:
             exit_price = float(tomorrow["Close"])
             exit_date = tomorrow["Date"]
             profit_loss = position_qty * (exit_price - entry_price)

@@ -10,7 +10,7 @@ from config import validate_config, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 from data.market_data import SYMBOLS, fetch_historical_data, fetch_live_price
 from execution.order_executor import OrderExecutor
 from risk.risk_manager import RiskManager
-from strategy.rsi_strategy import generate_signal, calculate_rsi
+from strategy.rsi_strategy import get_signal_details
 import asyncio
 import inspect
 
@@ -122,17 +122,29 @@ def run_trading_loop() -> None:
             for symbol in SYMBOLS:
                 try:
                     historical = fetch_historical_data(symbol, period="60d", interval="1d")
-                    signal = generate_signal(historical)
-                    # compute current RSI for messaging
-                    try:
-                        rsi_series = calculate_rsi(historical)
-                        rsi_value = float(rsi_series.iloc[-1]) if not rsi_series.empty else None
-                    except Exception:
-                        rsi_value = None
-                    logger.info("%s signal=%s", symbol, signal)
+                    details = get_signal_details(historical)
+                    signal = details.signal
+                    if signal == "STRONG BUY":
+                        key_level = "Support"
+                        key_value = details.support_level if details.support_level is not None else 0.0
+                    elif signal == "STRONG SELL":
+                        key_level = "Resistance"
+                        key_value = details.resistance_level if details.resistance_level is not None else 0.0
+                    else:
+                        key_level = "Support"
+                        key_value = details.support_level if details.support_level is not None else 0.0
+                    logger.info(
+                        "%s %s - RSI: %.1f EMA cross: %s %s: $%.2f",
+                        symbol,
+                        signal,
+                        details.rsi if details.rsi is not None else 0.0,
+                        "YES" if details.ema_cross != "NO" else "NO",
+                        key_level,
+                        key_value,
+                    )
 
                     current_qty = executor.get_position_qty(symbol)
-                    if signal == "BUY":
+                    if signal == "STRONG BUY":
                         if current_qty > 0:
                             logger.info("Already holding %s shares of %s", current_qty, symbol)
                             continue
@@ -165,7 +177,7 @@ def run_trading_loop() -> None:
                         if telegram_bot is not None:
                             now = datetime.now(MARKET_TZ)
                             time_str = now.strftime("%I:%M%p").lstrip("0").lower() + " EST"
-                            rsi_text = f"RSI: {rsi_value:.1f}\n" if rsi_value is not None else ""
+                            rsi_text = f"RSI: {details.rsi:.1f}\n" if details.rsi is not None else ""
                             msg = (
                                 f"🟢 BUY EXECUTED\n"
                                 f"Stock: {symbol}\n"
@@ -179,7 +191,7 @@ def run_trading_loop() -> None:
                             except Exception as e:
                                 logger.warning("Failed to send BUY Telegram message: %s", e)
 
-                    elif signal == "SELL" and current_qty > 0:
+                    elif signal == "STRONG SELL" and current_qty > 0:
                         order = executor.place_market_order(symbol, current_qty, side="sell")
                         current_open_positions = max(current_open_positions - 1, 0)
                         logger.info(
