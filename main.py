@@ -4,7 +4,7 @@ import argparse
 import logging
 import sys
 import time
-from datetime import datetime, time as dt_time
+from datetime import datetime, time as dt_time, date
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -109,6 +109,9 @@ def run_trading_loop(test_close: bool = False) -> None:
 
     logger.info("Starting trading loop")
     close_warning_sent = False
+    # track which symbols have already been sent an AI SKIP notification today
+    skip_notif_day = date.today()
+    skip_notified_symbols: set[str] = set()
 
     if test_close:
         logger.info("Market close test mode active: simulating 3:55pm warning and 4:00pm shutdown.")
@@ -128,6 +131,10 @@ def run_trading_loop(test_close: bool = False) -> None:
 
     while True:
         current_time = datetime.now(MARKET_TZ)
+        # reset daily skip notifications at midnight
+        if date.today() != skip_notif_day:
+            skip_notified_symbols.clear()
+            skip_notif_day = date.today()
 
         if is_market_closed_for_day(current_time):
             shutdown_msg = (
@@ -182,16 +189,6 @@ def run_trading_loop(test_close: bool = False) -> None:
                     current_short_positions = executor.count_short_positions()
 
                     if signal == "HOLD":
-                        if telegram_enabled:
-                            try:
-                                msg = (
-                                    f"⏸ HOLD - {symbol}\n"
-                                    f"RSI: {details.rsi if details.rsi is not None else 0.0:.1f} | EMA: {details.ema_cross}\n"
-                                    f"🧠 AI: No AI analysis for HOLD signals"
-                                )
-                                send_telegram_message(msg, logger=logger)
-                            except Exception as e:
-                                logger.warning("Failed to send HOLD Telegram message: %s", e)
                         continue
 
                     live_price = None
@@ -267,12 +264,14 @@ def run_trading_loop(test_close: bool = False) -> None:
                             )
                             if telegram_enabled:
                                 try:
-                                    msg = (
-                                        f"⚠️ BUY SKIPPED - {symbol}\n"
-                                        f"RSI: {details.rsi if details.rsi is not None else 0.0:.1f} | AI Confidence: {ai_confidence}%\n"
-                                        f"🧠 AI: {ai_reason}"
-                                    )
-                                    send_telegram_message(msg, logger=logger)
+                                    if symbol not in skip_notified_symbols:
+                                        msg = (
+                                            f"⚠️ BUY SKIPPED - {symbol}\n"
+                                            f"RSI: {details.rsi if details.rsi is not None else 0.0:.1f} | AI Confidence: {ai_confidence}%\n"
+                                            f"🧠 AI: {ai_reason}"
+                                        )
+                                        send_telegram_message(msg, logger=logger)
+                                        skip_notified_symbols.add(symbol)
                                 except Exception as e:
                                     logger.warning("Failed to send BUY SKIP Telegram message: %s", e)
                             continue
@@ -343,12 +342,14 @@ def run_trading_loop(test_close: bool = False) -> None:
                             )
                             if telegram_enabled:
                                 try:
-                                    msg = (
-                                        f"⚠️ SHORT SKIPPED - {symbol}\n"
-                                        f"RSI: {details.rsi if details.rsi is not None else 0.0:.1f} | AI Confidence: {ai_confidence}%\n"
-                                        f"🧠 AI: {ai_reason}"
-                                    )
-                                    send_telegram_message(msg, logger=logger)
+                                    if symbol not in skip_notified_symbols:
+                                        msg = (
+                                            f"⚠️ SHORT SKIPPED - {symbol}\n"
+                                            f"RSI: {details.rsi if details.rsi is not None else 0.0:.1f} | AI Confidence: {ai_confidence}%\n"
+                                            f"🧠 AI: {ai_reason}"
+                                        )
+                                        send_telegram_message(msg, logger=logger)
+                                        skip_notified_symbols.add(symbol)
                                 except Exception as e:
                                     logger.warning("Failed to send SHORT SKIP Telegram message: %s", e)
                             continue
@@ -388,26 +389,7 @@ def run_trading_loop(test_close: bool = False) -> None:
                             current_qty,
                             order.id,
                         )
-                        # Send Telegram notification for SELL
-                        if telegram_enabled:
-                            try:
-                                live_price = fetch_live_price(symbol)
-                            except Exception:
-                                live_price = None
-                            now = datetime.now(MARKET_TZ)
-                            time_str = now.strftime("%I:%M%p").lstrip("0").lower() + " EST"
-                            price_text = f"Price: ${live_price:.2f}\n" if live_price is not None else ""
-                            msg = (
-                                f"🔴 SELL EXECUTED\n"
-                                f"Stock: {symbol}\n"
-                                f"Shares: {current_qty}\n"
-                                f"{price_text}"
-                                f"Time: {time_str}"
-                            )
-                            try:
-                                send_telegram_message(msg, logger=logger)
-                            except Exception as e:
-                                logger.warning("Failed to send SELL Telegram message: %s", e)
+                        # SELL executed notifications are intentionally not sent to Telegram
                 except Exception as symbol_error:
                     logger.error("Error processing %s: %s", symbol, symbol_error)
         except Exception as err:
