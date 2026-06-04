@@ -7,4 +7,4 @@ sqlalchemy
 apscheduler
 streamlit
 python-dotenv
-python-telegram-bot
+requests

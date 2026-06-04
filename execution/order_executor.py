@@ -61,3 +61,33 @@ class OrderExecutor:
             type="market",
             time_in_force="day",
         )
+
+    def place_short_market_order(self, symbol: str, qty: int) -> tradeapi.entity.Order:
+        """Place a short market order (sell to open a short).
+        
+        Alpaca automatically handles this as a short sell when you don't own the stock.
+        """
+        if qty <= 0:
+            raise ValueError("Order quantity must be greater than zero")
+        return self.client.submit_order(
+            symbol=symbol,
+            qty=qty,
+            side="sell",
+            type="market",
+            time_in_force="day",
+        )
+
+    def get_position(self, symbol: str) -> Optional[tradeapi.entity.Position]:
+        """Return the Alpaca position object for a symbol or None if not held."""
+        try:
+            return self.client.get_position(symbol)
+        except Exception:
+            return None
+
+    def count_short_positions(self) -> int:
+        """Return the number of currently open short positions (qty < 0)."""
+        try:
+            positions = self.client.list_positions()
+            return sum(1 for p in positions if float(p.qty) < 0)
+        except Exception:
+            return 0

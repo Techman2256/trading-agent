@@ -1,0 +1,4 @@
+{"timestamp": "2026-06-04T15:20:19.632881Z", "symbol": "JPM", "signal": "SHORT", "rsi": 57.464688227308606, "ema_cross": "BELOW", "qty": 0, "action": "short_sell", "pl": null}
+{"timestamp": "2026-06-04T15:24:55.979413Z", "symbol": "JPM", "signal": "SHORT", "rsi": 57.655789345164294, "ema_cross": "BELOW", "qty": 0, "action": "short_sell", "pl": null, "price": 309.6499938964844, "order_id": "mock-JPM-short-6"}
+{"timestamp": "2026-06-04T15:32:16.840957Z", "symbol": "JPM", "signal": "SHORT", "rsi": 58.266372086804324, "ema_cross": "BELOW", "qty": 0, "action": "short_sell", "pl": null, "price": 310.3699951171875, "order_id": "mock-JPM-short-6"}
+{"timestamp": "2026-06-04T15:34:20.317890Z", "symbol": "JPM", "signal": "SHORT", "rsi": 58.09011958312256, "ema_cross": "BELOW", "qty": 0, "action": "short_sell", "pl": null, "price": 310.1600036621094, "order_id": "mock-JPM-short-6", "order_qty": 6}

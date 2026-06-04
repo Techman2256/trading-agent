@@ -13,13 +13,7 @@ from data.market_data import SYMBOLS, fetch_historical_data, fetch_live_price
 from execution.order_executor import OrderExecutor
 from risk.risk_manager import RiskManager
 from strategy.rsi_strategy import get_signal_details
-import asyncio
-import inspect
-
-try:
-    from telegram import Bot
-except Exception:
-    Bot = None
+import requests
 
 LOG_PATH = Path("logs") / "trades.log"
 MARKET_TZ = ZoneInfo("America/New_York")
@@ -71,17 +65,22 @@ def is_market_closed_for_day(current_time: datetime) -> bool:
     return current_time.weekday() < 5 and current_time.time() >= MARKET_CLOSE
 
 
-def send_telegram_message(bot, chat_id: str, text: str, logger: logging.Logger | None = None) -> bool:
-    """Send a Telegram message using the provided Bot instance.
+def send_telegram_message(text: str, logger: logging.Logger | None = None) -> bool:
+    """Send a Telegram message using the Telegram Bot API via HTTP POST."""
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        if logger:
+            logger.info("Telegram credentials not set; unable to send message")
+        return False
 
-    This helper uses asyncio.run() to execute the coroutine returned by
-    `Bot.send_message` (python-telegram-bot v20+), matching the working test.
-    It returns True on success, False on failure.
-    """
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    payload = {
+        "chat_id": TELEGRAM_CHAT_ID,
+        "text": text,
+    }
+
     try:
-        send_result = bot.send_message(chat_id=chat_id, text=text)
-        if inspect.isawaitable(send_result):
-            asyncio.run(send_result)
+        response = requests.post(url, data=payload, timeout=10)
+        response.raise_for_status()
         return True
     except Exception as e:
         if logger:
@@ -95,22 +94,15 @@ def run_trading_loop(test_close: bool = False) -> None:
     logger = setup_logger()
     executor = OrderExecutor()
     risk_manager = RiskManager()
-    # Initialize Telegram bot if credentials are provided
-    telegram_bot = None
-    if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID and Bot is not None:
+    telegram_enabled = bool(TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID)
+    if telegram_enabled:
+        startup_msg = f"🤖 Trading Bot is now LIVE and watching {len(SYMBOLS)} stocks!"
         try:
-            telegram_bot = Bot(token=TELEGRAM_BOT_TOKEN)
-            startup_msg = f"🤖 Trading Bot is now LIVE and watching {len(SYMBOLS)} stocks!"
-            # Send startup message, handling async/sync Bot implementations
-            try:
-                send_telegram_message(telegram_bot, TELEGRAM_CHAT_ID, startup_msg, logger=logger)
-            except Exception as e:
-                logger.warning("Failed to send startup Telegram message: %s", e)
+            send_telegram_message(startup_msg, logger=logger)
         except Exception as e:
-            logger.warning("Failed to initialize Telegram bot: %s", e)
+            logger.warning("Failed to send startup Telegram message: %s", e)
     else:
-        if Bot is None:
-            logger.info("python-telegram-bot not installed; skipping Telegram notifications")
+        logger.info("Telegram credentials not set; skipping Telegram notifications")
 
     logger.info("Starting trading loop")
     close_warning_sent = False
@@ -119,16 +111,16 @@ def run_trading_loop(test_close: bool = False) -> None:
         logger.info("Market close test mode active: simulating 3:55pm warning and 4:00pm shutdown.")
         warning_msg = "⚠️ Market closing in 5 minutes!"
         logger.info(warning_msg)
-        if telegram_bot is not None:
-            send_telegram_message(telegram_bot, TELEGRAM_CHAT_ID, warning_msg, logger=logger)
+        if telegram_enabled:
+            send_telegram_message(warning_msg, logger=logger)
 
         shutdown_msg = (
             "🔴 Market closed for the day. Bot is shutting down. "
             "Check Alpaca for today's positions."
         )
         logger.info("Market closed for the day. Bot shutting down.")
-        if telegram_bot is not None:
-            send_telegram_message(telegram_bot, TELEGRAM_CHAT_ID, shutdown_msg, logger=logger)
+        if telegram_enabled:
+            send_telegram_message(shutdown_msg, logger=logger)
         sys.exit(0)
 
     while True:
@@ -140,15 +132,15 @@ def run_trading_loop(test_close: bool = False) -> None:
                 "Check Alpaca for today's positions."
             )
             logger.info("Market closed for the day. Bot shutting down.")
-            if telegram_bot is not None:
-                send_telegram_message(telegram_bot, TELEGRAM_CHAT_ID, shutdown_msg, logger=logger)
+            if telegram_enabled:
+                send_telegram_message(shutdown_msg, logger=logger)
             sys.exit(0)
 
         if is_market_close_warning_time(current_time) and not close_warning_sent:
             warning_msg = "⚠️ Market closing in 5 minutes!"
             logger.info(warning_msg)
-            if telegram_bot is not None:
-                send_telegram_message(telegram_bot, TELEGRAM_CHAT_ID, warning_msg, logger=logger)
+            if telegram_enabled:
+                send_telegram_message(warning_msg, logger=logger)
             close_warning_sent = True
 
         if not is_market_open(current_time):
@@ -174,26 +166,46 @@ def run_trading_loop(test_close: bool = False) -> None:
                     historical = fetch_historical_data(symbol, period="60d", interval="1d")
                     details = get_signal_details(historical)
                     signal = details.signal
-                    if signal == "STRONG BUY":
-                        key_level = "Support"
-                        key_value = details.support_level if details.support_level is not None else 0.0
-                    elif signal == "STRONG SELL":
-                        key_level = "Resistance"
-                        key_value = details.resistance_level if details.resistance_level is not None else 0.0
-                    else:
-                        key_level = "Support"
-                        key_value = details.support_level if details.support_level is not None else 0.0
                     logger.info(
-                        "%s %s - RSI: %.1f EMA cross: %s %s: $%.2f",
+                        "%s %s - RSI: %.1f EMA cross: %s",
                         symbol,
                         signal,
                         details.rsi if details.rsi is not None else 0.0,
-                        "YES" if details.ema_cross != "NO" else "NO",
-                        key_level,
-                        key_value,
+                        details.ema_cross,
                     )
 
                     current_qty = executor.get_position_qty(symbol)
+                    # count current short positions across account
+                    current_short_positions = executor.count_short_positions()
+
+                    # Cover short positions when RSI dropped below threshold
+                    if current_qty < 0 and risk_manager.should_cover_short(details.rsi):
+                        pos = executor.get_position(symbol)
+                        pl = 0.0
+                        if pos is not None and hasattr(pos, "unrealized_pl"):
+                            try:
+                                pl = float(pos.unrealized_pl)
+                            except Exception:
+                                pl = 0.0
+                        cover_qty = abs(current_qty)
+                        order = executor.place_market_order(symbol, cover_qty, side="buy")
+                        current_open_positions = max(current_open_positions - 1, 0)
+                        logger.info(
+                            "✅ SHORT COVERED - Stock: %s Profit/Loss: $%.2f",
+                            symbol,
+                            pl,
+                        )
+                        if telegram_enabled:
+                            try:
+                                msg = (
+                                    f"✅ SHORT COVERED - Stock: {symbol} Profit/Loss: ${pl:.2f}"
+                                )
+                                send_telegram_message(msg, logger=logger)
+                            except Exception as e:
+                                logger.warning("Failed to send SHORT COVER Telegram message: %s", e)
+                        # after covering, skip further processing this symbol this cycle
+                        continue
+
                     if signal == "STRONG BUY":
                         if current_qty > 0:
                             logger.info("Already holding %s shares of %s", current_qty, symbol)
@@ -206,8 +218,8 @@ def run_trading_loop(test_close: bool = False) -> None:
                             logger.warning("Skipping buy for %s due to risk limits", symbol)
                             continue
                         live_price = fetch_live_price(symbol)
-                        order_qty = risk_manager.calculate_trade_quantity(
-                            live_price, float(account.equity)
+                        order_qty = risk_manager.calculate_position_size(
+                            float(account.equity), live_price
                         )
                         if order_qty <= 0:
                             logger.warning(
@@ -224,24 +236,53 @@ def run_trading_loop(test_close: bool = False) -> None:
                             order.id,
                         )
                         # Send Telegram notification for BUY
-                        if telegram_bot is not None:
+                        if telegram_enabled:
                             now = datetime.now(MARKET_TZ)
-                            time_str = now.strftime("%I:%M%p").lstrip("0").lower() + " EST"
-                            rsi_text = f"RSI: {details.rsi:.1f}\n" if details.rsi is not None else ""
-                            msg = (
-                                f"🟢 BUY EXECUTED\n"
-                                f"Stock: {symbol}\n"
-                                f"Shares: {order_qty}\n"
-                                f"Price: ${live_price:.2f}\n"
-                                f"{rsi_text}"
-                                f"Time: {time_str}"
-                            )
-                            try:
-                                send_telegram_message(telegram_bot, TELEGRAM_CHAT_ID, msg, logger=logger)
-                            except Exception as e:
-                                logger.warning("Failed to send BUY Telegram message: %s", e)
 
-                    elif signal == "STRONG SELL" and current_qty > 0:
+                    elif signal == "SHORT":
+                        # open a new short position
+                        if current_qty < 0:
+                            logger.info("Already short %s shares of %s", abs(current_qty), symbol)
+                            continue
+                        if not risk_manager.can_open_short_position(current_short_positions):
+                            logger.warning("Skipping short for %s due to short position limits", symbol)
+                            continue
+                        live_price = fetch_live_price(symbol)
+                        # use explicit position sizing API (account_equity, price)
+                        order_qty = risk_manager.calculate_position_size(
+                            float(account.equity), live_price
+                        )
+                        if order_qty <= 0:
+                            logger.warning(
+                                "Calculated short order quantity for %s is zero; skipping",
+                                symbol,
+                            )
+                            continue
+                        order = executor.place_short_market_order(symbol, order_qty)
+                        current_open_positions += 1
+                        logger.info(
+                            "Placed SHORT SELL order for %s qty=%d id=%s",
+                            symbol,
+                            order_qty,
+                            order.id,
+                        )
+                        # Send Telegram notification for SHORT
+                        if telegram_enabled:
+                            try:
+                                msg = (
+                                    f"🔴 SHORT SELL - Stock: {symbol} RSI: {details.rsi:.1f}"
+                                )
+                                send_telegram_message(msg, logger=logger)
+                            except Exception as e:
+                                logger.warning("Failed to send SHORT Telegram message: %s", e)
+
+                    elif signal == "STRONG SELL":
+                        if current_qty <= 0:
+                            logger.info(
+                                "SELL signal for %s ignored because no position is held",
+                                symbol,
+                            )
+                            continue
                         order = executor.place_market_order(symbol, current_qty, side="sell")
                         current_open_positions = max(current_open_positions - 1, 0)
                         logger.info(
@@ -251,7 +292,7 @@ def run_trading_loop(test_close: bool = False) -> None:
                             order.id,
                         )
                         # Send Telegram notification for SELL
-                        if telegram_bot is not None:
+                        if telegram_enabled:
                             try:
                                 live_price = fetch_live_price(symbol)
                             except Exception:
@@ -267,7 +308,7 @@ def run_trading_loop(test_close: bool = False) -> None:
                                 f"Time: {time_str}"
                             )
                             try:
-                                send_telegram_message(telegram_bot, TELEGRAM_CHAT_ID, msg, logger=logger)
+                                send_telegram_message(msg, logger=logger)
                             except Exception as e:
                                 logger.warning("Failed to send SELL Telegram message: %s", e)
                 except Exception as symbol_error:
