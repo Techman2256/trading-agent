@@ -4045,3 +4045,216 @@
 2026-06-04 13:51:31 [INFO] IWM HOLD - RSI: 62.2 EMA cross: ABOVE
 2026-06-04 13:51:35 [INFO] AI Analysis: SKIP - Confidence: 72 - The signal is HOLD, not a clear BUY or SELL trigger, which provides no actionable entry point. While the EMA cross being ABOVE is bullish and RSI at 62.22 shows moderate momentum without being overbought, a HOLD signal suggests the trade is already in position or lacks a defined entry catalyst. Without a confirmed entry trigger, initiating a new position here carries unnecessary timing risk, especially with RSI approaching the 65-70 caution zone where pullbacks become more likely.
 2026-06-04 13:51:36 [INFO] GLD HOLD - RSI: 41.9 EMA cross: BELOW
+2026-06-04 13:51:41 [INFO] AI Analysis: SKIP - Confidence: 82 - Multiple bearish indicators align against taking action here. RSI at 41.89 is trending toward oversold territory but hasn't confirmed a reversal, suggesting continued downside pressure. The price trading BELOW the EMA cross confirms bearish momentum, indicating the short-term average is under the long-term average — a classic sell/avoid signal. A HOLD signal combined with these technical weaknesses offers no compelling entry point. Risk/reward does not favor initiating or adding to a position until RSI stabilizes above 50 and price reclaims the EMA crossover level.
+2026-06-04 13:51:42 [INFO] TLT HOLD - RSI: 55.7 EMA cross: ABOVE
+2026-06-04 13:51:45 [ERROR] Unexpected trading loop error: unauthorized.
+2026-06-04 13:51:46 [INFO] AI Analysis: SKIP - Confidence: 72 - Signal is HOLD rather than a clear BUY/SELL trigger, offering no actionable edge. While RSI at 55.68 is neutral-to-slightly-bullish and price is trading above the EMA (a positive structural sign), these conditions alone don't justify initiating a new position. TLT is highly sensitive to interest rate expectations, and without a confirmed momentum shift or breakout catalyst, entering here carries unnecessary risk with limited defined upside. Wait for a stronger directional signal before committing capital.
+2026-06-04 13:51:47 [INFO] ARKK HOLD - RSI: 56.8 EMA cross: ABOVE
+2026-06-04 13:51:52 [INFO] AI Analysis: SKIP - Confidence: 72 - The signal is HOLD, not a clear BUY or SELL trigger, which means there's no actionable edge here. While RSI at 56.84 is mildly bullish (above 50 but not overbought) and price is trading above the EMA (bullish alignment), a HOLD signal lacks the conviction needed to initiate a new position. ARKK is a high-volatility, speculative ETF that requires stronger directional confirmation before committing capital. Waiting for a clearer BUY signal with momentum confirmation would be more prudent.
+2026-06-04 13:51:52 [INFO] MSTR HOLD - RSI: 31.5 EMA cross: BELOW
+2026-06-04 13:51:56 [INFO] AI Analysis: SKIP - Confidence: 72 - Despite RSI approaching oversold territory (31.47), the signal is HOLD rather than a clear BUY, and price trading BELOW the EMA cross indicates bearish momentum with no confirmed reversal. MSTR carries additional risk as a leveraged Bitcoin proxy, amplifying downside volatility. Waiting for EMA crossover confirmation and RSI stabilization above 30 with bullish divergence would provide a stronger entry signal before committing capital.
+2026-06-04 13:51:56 [INFO] Account equity=99990.99 open_positions=2 daily_loss_pct=0.00%
+2026-06-04 13:51:57 [INFO] AAPL HOLD - RSI: 66.9 EMA cross: ABOVE
+2026-06-04 13:51:57 [INFO] TSLA HOLD - RSI: 51.4 EMA cross: ABOVE
+2026-06-04 13:51:57 [INFO] RIVN HOLD - RSI: 74.4 EMA cross: ABOVE
+2026-06-04 13:51:57 [INFO] MSFT HOLD - RSI: 52.7 EMA cross: ABOVE
+2026-06-04 13:51:58 [INFO] AMZN HOLD - RSI: 43.5 EMA cross: BELOW
+2026-06-04 13:51:58 [INFO] NVDA HOLD - RSI: 54.7 EMA cross: ABOVE
+2026-06-04 13:51:58 [INFO] GOOGL HOLD - RSI: 49.2 EMA cross: BELOW
+2026-06-04 13:51:59 [INFO] META HOLD - RSI: 53.9 EMA cross: BELOW
+2026-06-04 13:51:59 [INFO] NFLX HOLD - RSI: 27.6 EMA cross: BELOW
+2026-06-04 13:52:00 [INFO] AMD HOLD - RSI: 72.5 EMA cross: ABOVE
+2026-06-04 13:52:00 [INFO] COIN HOLD - RSI: 37.0 EMA cross: BELOW
+2026-06-04 13:52:00 [INFO] SPY HOLD - RSI: 70.3 EMA cross: ABOVE
+2026-06-04 13:52:01 [INFO] QQQ HOLD - RSI: 75.6 EMA cross: ABOVE
+2026-06-04 13:52:01 [INFO] JPM SHORT - RSI: 58.1 EMA cross: BELOW
+2026-06-04 13:52:01 [INFO] Already short 6 shares of JPM
+2026-06-04 13:52:02 [INFO] DIS HOLD - RSI: 39.6 EMA cross: BELOW
+2026-06-04 13:52:02 [INFO] AI Analysis: SKIP - Confidence: 78 - RSI at 74.40 indicates overbought conditions, suggesting the asset is overextended and due for a potential pullback or consolidation. While the EMA cross being ABOVE confirms bullish momentum, entering a HOLD signal at these elevated RSI levels presents unfavorable risk/reward. The combination of overbought RSI with RIVN's fundamentally challenged profile (ongoing cash burn, production concerns) increases downside risk. Better to wait for RSI to cool down to the 50-60 range before considering entry.
+2026-06-04 13:52:02 [INFO] BA HOLD - RSI: 46.0 EMA cross: BELOW
+2026-06-04 13:52:02 [INFO] CRM HOLD - RSI: 54.0 EMA cross: ABOVE
+2026-06-04 13:52:02 [INFO] SOFI HOLD - RSI: 52.1 EMA cross: ABOVE
+2026-06-04 13:52:03 [INFO] PLTR HOLD - RSI: 49.0 EMA cross: ABOVE
+2026-06-04 13:52:03 [INFO] SNOW HOLD - RSI: 69.3 EMA cross: ABOVE
+2026-06-04 13:52:04 [INFO] UBER HOLD - RSI: 45.4 EMA cross: BELOW
+2026-06-04 13:52:05 [INFO] GS HOLD - RSI: 75.4 EMA cross: ABOVE
+2026-06-04 13:52:05 [INFO] BAC HOLD - RSI: 64.4 EMA cross: ABOVE
+2026-06-04 13:52:06 [INFO] V HOLD - RSI: 48.0 EMA cross: BELOW
+2026-06-04 13:52:07 [INFO] AI Analysis: SKIP - Confidence: 72 - The signal is HOLD rather than a clear BUY/SELL entry trigger, offering no actionable edge. While the RSI at 52.09 is neutral (neither oversold nor overbought) and price sitting above the EMA is mildly bullish, these conditions alone don't justify initiating a new position. Waiting for a stronger directional signal — such as a confirmed bullish EMA crossover, RSI momentum push above 60, or a defined breakout level — would provide a better risk/reward entry on SOFI.
+2026-06-04 13:52:07 [INFO] MA HOLD - RSI: 39.6 EMA cross: BELOW
+2026-06-04 13:52:08 [INFO] UNH HOLD - RSI: 66.8 EMA cross: ABOVE
+2026-06-04 13:52:08 [INFO] JNJ HOLD - RSI: 50.7 EMA cross: BELOW
+2026-06-04 13:52:09 [INFO] PFE HOLD - RSI: 45.4 EMA cross: BELOW
+2026-06-04 13:52:10 [INFO] XOM HOLD - RSI: 52.0 EMA cross: BELOW
+2026-06-04 13:52:11 [INFO] CVX HOLD - RSI: 52.9 EMA cross: BELOW
+2026-06-04 13:52:11 [INFO] IWM HOLD - RSI: 62.2 EMA cross: ABOVE
+2026-06-04 13:52:12 [INFO] GLD HOLD - RSI: 41.9 EMA cross: BELOW
+2026-06-04 13:52:13 [INFO] TLT HOLD - RSI: 55.7 EMA cross: ABOVE
+2026-06-04 13:52:13 [INFO] ARKK HOLD - RSI: 56.8 EMA cross: ABOVE
+2026-06-04 13:52:14 [INFO] MSTR HOLD - RSI: 31.5 EMA cross: BELOW
+2026-06-04 13:52:15 [INFO] RIVN HOLD - RSI: 74.4 EMA cross: ABOVE
+2026-06-04 13:52:15 [INFO] SOFI HOLD - RSI: 52.1 EMA cross: ABOVE
+2026-06-04 13:52:16 [INFO] NIO HOLD - RSI: 46.8 EMA cross: BELOW
+2026-06-04 13:52:17 [INFO] HOOD HOLD - RSI: 56.7 EMA cross: ABOVE
+2026-06-04 13:52:17 [INFO] PYPL HOLD - RSI: 34.0 EMA cross: BELOW
+2026-06-04 13:52:18 [INFO] NIO HOLD - RSI: 46.8 EMA cross: BELOW
+2026-06-04 13:52:18 [INFO] ROKU HOLD - RSI: 54.8 EMA cross: ABOVE
+2026-06-04 13:52:22 [INFO] AI Analysis: SKIP - Confidence: 82 - Multiple bearish/neutral indicators align unfavorably — RSI at 46.75 is below the midpoint (50), suggesting weak momentum and lack of buying pressure. Price trading BELOW the EMA cross confirms a bearish trend structure. The HOLD signal offers no actionable edge. Risk/reward does not justify entry at this time; better to wait for RSI recovery above 50 and a bullish EMA crossover confirmation before considering a position in NIO.
+2026-06-04 13:52:23 [INFO] HOOD HOLD - RSI: 56.8 EMA cross: ABOVE
+2026-06-04 13:52:28 [INFO] AI Analysis: SKIP - Confidence: 72 - Signal is HOLD rather than a clear BUY/SELL trigger, offering no actionable edge. While RSI at 56.84 is neutral-to-mildly bullish and price is above EMA (positive trend structure), there is insufficient momentum confirmation to justify a new entry at $86.64. HOOD has had significant volatility and at this price level, risk/reward without a stronger directional signal or volume confirmation does not warrant capital deployment. Wait for RSI to push toward 60-65+ with a confirmed breakout signal before proceeding.
+2026-06-04 13:52:30 [INFO] PYPL HOLD - RSI: 34.1 EMA cross: BELOW
+2026-06-04 13:52:34 [ERROR] Unexpected trading loop error: unauthorized.
+2026-06-04 13:52:36 [INFO] AI Analysis: SKIP - Confidence: 78 - Multiple bearish indicators align here — RSI at 34.12 is approaching oversold territory but hasn't confirmed a reversal, and price trading BELOW the EMA cross suggests downward momentum is still intact. The signal is HOLD rather than BUY, offering no clear entry trigger. While RSI nearing oversold *could* suggest a bounce is approaching, entering without a confirmed reversal signal (RSI turning up, bullish EMA crossover, or price reclaiming key levels) is premature and carries unnecessary downside risk. Wait for confirmation before committing capital.
+2026-06-04 13:52:37 [INFO] ROKU HOLD - RSI: 54.8 EMA cross: ABOVE
+2026-06-04 13:52:42 [INFO] AI Analysis: SKIP - Confidence: 72 - The signal is HOLD rather than a clear BUY/SELL entry trigger, offering no actionable edge. While the setup is moderately constructive — RSI at 54.81 is neutral-to-bullish territory and price trading above the EMA cross suggests short-term momentum — there is insufficient directional conviction to justify entering a new position. A HOLD signal typically applies to existing positions, not new entries. Wait for a confirmed breakout or pullback to EMA with a stronger RSI momentum read before committing capital.
+2026-06-04 13:53:18 [INFO] Starting trading loop
+2026-06-04 13:53:18 [INFO] Account equity=99990.57 open_positions=2 daily_loss_pct=-0.00%
+2026-06-04 13:53:20 [INFO] AAPL HOLD - RSI: 66.9 EMA cross: ABOVE
+2026-06-04 13:53:25 [INFO] AI Analysis: SKIP - Confidence: 72 - The signal is HOLD, which provides no clear directional entry point for a trade. While the EMA cross is bullish (price above EMA) and RSI at 66.91 shows momentum, it's approaching overbought territory (nearing 70). Without a clear BUY signal and with RSI suggesting limited upside headroom before a potential pullback, initiating a new position here carries unfavorable risk/reward. Better to wait for either a confirmed BUY signal with RSI cooling down, or a pullback to a stronger entry level.
+2026-06-04 13:53:26 [INFO] TSLA HOLD - RSI: 51.4 EMA cross: ABOVE
+2026-06-04 13:53:32 [INFO] AI Analysis: SKIP - Confidence: 72 - The signal is HOLD, not a clear BUY or SELL trigger, making this a poor entry point for an active trade. While the EMA cross is bullish (price above EMA) and RSI at 51.41 is neutral-to-slightly-bullish with room to run, there is no strong momentum confirmation to justify initiating a new position. TSLA is also a highly volatile stock that warrants stronger confluence signals before committing capital. Waiting for a more decisive directional signal with stronger RSI momentum would be prudent.
+2026-06-04 13:53:43 [INFO] MSFT HOLD - RSI: 52.8 EMA cross: ABOVE
+2026-06-04 13:53:48 [INFO] AI Analysis: SKIP - Confidence: 72 - The signal is explicitly HOLD, which does not warrant initiating a new trade entry. While the technicals are mildly supportive — RSI at 52.82 is neutral-to-slightly-bullish with no overbought/oversold concern, and price trading above EMA confirms a positive trend bias — there is no actionable momentum trigger present. A HOLD signal suggests the position is range-bound or consolidating, and entering here without a clear breakout or directional catalyst increases risk of a flat or choppy trade. Wait for a stronger BUY signal confirmation before committing capital.
+2026-06-04 13:53:49 [INFO] AMZN HOLD - RSI: 43.5 EMA cross: BELOW
+2026-06-04 13:53:55 [INFO] AI Analysis: SKIP - Confidence: 82 - Multiple bearish indicators align against taking a position. RSI at 43.47 is trending toward oversold territory but hasn't reached a reversal point, suggesting continued downward pressure. Price trading BELOW the EMA cross confirms bearish momentum with no confirmed reversal signal. The HOLD signal provides no actionable entry trigger. Risk/reward does not favor entering at this stage — waiting for RSI recovery above 50 and a bullish EMA crossover confirmation would be prudent before considering entry.
+2026-06-04 13:53:56 [INFO] NVDA HOLD - RSI: 54.7 EMA cross: ABOVE
+2026-06-04 13:54:01 [INFO] AI Analysis: SKIP - Confidence: 72 - The signal itself is HOLD, which provides no actionable entry trigger. While conditions are moderately constructive (price above EMA, RSI at a neutral 54.68 suggesting neither overbought nor oversold), there is no confirmed bullish momentum or crossover event to justify a new entry. RSI is middling with no strong directional conviction. Waiting for a clearer BUY signal with RSI trending above 60 and a confirmed EMA crossover would offer a higher-probability setup. Current conditions do not meet the threshold for a decisive trade entry.
+2026-06-04 13:54:02 [INFO] GOOGL HOLD - RSI: 49.1 EMA cross: BELOW
+2026-06-04 13:54:09 [INFO] AI Analysis: SKIP - Confidence: 85 - Multiple bearish/neutral indicators align against taking action. RSI at 49.14 is sitting just below the midpoint (50), showing no bullish momentum. The EMA cross is BELOW, confirming bearish trend positioning. The signal itself is HOLD, providing no directional conviction. There is no technical edge present to justify entering a new position — risk/reward is unfavorable with price trading beneath key moving averages and momentum failing to confirm any reversal. Waiting for RSI to break above 50 and a bullish EMA crossover would provide a more favorable entry setup.
+2026-06-04 13:54:11 [INFO] META HOLD - RSI: 53.9 EMA cross: BELOW
+2026-06-04 13:54:16 [INFO] AI Analysis: SKIP - Confidence: 78 - The signal itself is HOLD rather than a clear BUY entry trigger, and the EMA cross being BELOW indicates bearish momentum structure — price is trading below the key moving average, suggesting the trend lacks bullish confirmation. While the RSI at ~54 is neutral and not overbought/oversold, there is no compelling technical catalyst to enter a new position. Risk/reward does not favor initiating a trade without a confirmed bullish crossover or stronger directional signal.
+2026-06-04 13:54:17 [INFO] NFLX HOLD - RSI: 27.5 EMA cross: BELOW
+2026-06-04 13:54:22 [INFO] AI Analysis: SKIP - Confidence: 72 - While the RSI at 27.55 indicates oversold conditions which could suggest a potential bounce, the signal is HOLD rather than a clear BUY, and the price trading BELOW the EMA cross confirms a bearish trend is still intact. The oversold RSI alone is insufficient to justify entry without confirmation of trend reversal. Waiting for EMA crossover confirmation or a stronger buy signal would be more prudent before committing capital. The risk of a continued downtrend outweighs the potential reward at this stage.
+2026-06-04 13:54:23 [INFO] AMD HOLD - RSI: 72.3 EMA cross: ABOVE
+2026-06-04 13:54:28 [INFO] AI Analysis: SKIP - Confidence: 78 - AMD is showing overbought conditions with RSI at 72.28 (above the 70 threshold), and the signal itself is HOLD rather than a clear BUY entry. While the price being above EMA is bullish, entering a new position at these levels carries elevated risk of a mean-reversion pullback. Better to wait for RSI to cool down to the 50-60 range before considering entry.
+2026-06-04 13:54:30 [INFO] COIN HOLD - RSI: 37.2 EMA cross: BELOW
+2026-06-04 13:54:35 [INFO] AI Analysis: SKIP - Confidence: 82 - Multiple bearish indicators align against taking this trade. RSI at 37.22 suggests the asset is approaching oversold territory but hasn't confirmed a reversal yet — momentum is still to the downside. Price trading BELOW the EMA cross confirms bearish trend structure with no confirmed crossover recovery. The HOLD signal offers no directional conviction to justify entry. Risk/reward is unfavorable until we see RSI stabilization above 40, a confirmed EMA recross, or a clear price action reversal signal. Waiting for stronger confirmation before committing capital.
+2026-06-04 13:54:36 [INFO] SPY HOLD - RSI: 70.3 EMA cross: ABOVE
+2026-06-04 13:54:41 [ERROR] Unexpected trading loop error: unauthorized.
+2026-06-04 13:54:41 [INFO] AI Analysis: SKIP - Confidence: 78 - RSI at 70.27 indicates overbought conditions, suggesting the asset is overextended and due for a pullback or consolidation. While the EMA cross being ABOVE confirms bullish momentum, entering or holding a new position at these elevated levels presents unfavorable risk/reward. The HOLD signal combined with overbought RSI suggests waiting for a pullback toward a healthier RSI level (ideally 50-60 range) before considering a fresh entry. Chasing price at $757.35 under these conditions increases downside risk significantly.
+2026-06-04 13:54:42 [INFO] QQQ HOLD - RSI: 75.5 EMA cross: ABOVE
+2026-06-04 13:54:47 [INFO] AI Analysis: SKIP - Confidence: 78 - RSI at 75.45 is in overbought territory, suggesting the asset is overextended and due for a potential pullback or consolidation. While the EMA cross being ABOVE indicates bullish momentum, entering a HOLD signal at these elevated RSI levels carries significant mean-reversion risk. The risk/reward ratio is unfavorable for new entries at this price point. Better to wait for RSI to cool down to the 50-65 range before considering a position, or look for a pullback to key EMA support levels before committing capital.
+2026-06-04 13:54:48 [INFO] JPM SHORT - RSI: 58.1 EMA cross: BELOW
+2026-06-04 13:54:54 [INFO] AI Analysis: SKIP - Confidence: 75 - The setup lacks conviction for a short trade. RSI at 58.09 is in moderately bullish territory, not yet overbought (typically 70+), suggesting no clear exhaustion signal. While price is trading below the EMA (supporting bearish bias), the RSI reading conflicts with the short thesis — momentum is still leaning bullish. JPM as a large-cap financial also tends to be resilient, and entering a short without stronger confirmation (overbought RSI, bearish divergence, or a clear resistance rejection) increases risk of a false signal. Wait for RSI to push toward 65-70+ before considering a short entry.
+2026-06-04 13:54:54 [INFO] Already short 6 shares of JPM
+2026-06-04 13:54:55 [INFO] DIS HOLD - RSI: 39.6 EMA cross: BELOW
+2026-06-04 13:55:00 [INFO] AI Analysis: SKIP - Confidence: 82 - Multiple bearish indicators align against this trade. RSI at 39.57 suggests weakening momentum approaching oversold territory but without a confirmed reversal signal yet. Price trading BELOW the EMA cross confirms a bearish trend structure. The HOLD signal provides no actionable edge — entering here risks catching a falling knife with no technical confirmation of a bottom or trend reversal. Better to wait for RSI stabilization above 40-45 and a bullish EMA crossover before considering entry.
+2026-06-04 13:55:01 [INFO] BA HOLD - RSI: 45.9 EMA cross: BELOW
+2026-06-04 13:55:06 [INFO] AI Analysis: SKIP - Confidence: 82 - Multiple bearish indicators align against taking this trade. RSI at 45.89 is below the neutral 50 level, indicating weakening momentum and slight bearish bias. The price trading BELOW the EMA cross confirms a bearish trend structure. The HOLD signal provides no directional conviction to justify entry. BA has also faced persistent fundamental headwinds (production issues, regulatory scrutiny) that add further downside risk. No compelling technical or signal-based reason to enter at this time — waiting for RSI recovery above 50 and a bullish EMA crossover would provide a much stronger setup.
+2026-06-04 13:55:07 [INFO] CRM HOLD - RSI: 54.1 EMA cross: ABOVE
+2026-06-04 13:55:09 [ERROR] Unexpected trading loop error: unauthorized.
+2026-06-04 13:55:12 [INFO] AI Analysis: SKIP - Confidence: 72 - The signal is HOLD, not a clear BUY or SELL, which provides no actionable edge for entering a new trade. While the EMA cross being ABOVE is mildly bullish and RSI at 54.14 is neutral-to-slightly-bullish with room to run, the absence of a directional trigger means there's no defined entry catalyst. Waiting for a stronger momentum signal or RSI push above 60 with a confirmed bullish crossover would offer a higher-probability setup on CRM.
+2026-06-04 13:55:13 [INFO] PLTR HOLD - RSI: 49.1 EMA cross: ABOVE
+2026-06-04 13:55:13 [ERROR] Unexpected trading loop error: unauthorized.
+2026-06-04 13:55:17 [INFO] AI Analysis: SKIP - Confidence: 72 - The signal is HOLD rather than a clear BUY, and the RSI at 49.07 is neutral/slightly bearish territory with no strong momentum. While price is above the EMA (bullish structural bias), the lack of a decisive directional signal combined with a flat RSI offers an unfavorable risk/reward for initiating a new position. Wait for RSI confirmation above 55+ or a cleaner breakout signal before entering.
+2026-06-04 13:55:19 [INFO] SNOW HOLD - RSI: 69.4 EMA cross: ABOVE
+2026-06-04 13:55:25 [INFO] AI Analysis: SKIP - Confidence: 72 - While the EMA cross is bullish (price above EMA), the RSI at 69.44 is approaching overbought territory (threshold: 70), suggesting the upward momentum may be nearing exhaustion. Combined with a HOLD signal rather than a clear BUY, the risk/reward ratio is unfavorable for a new entry at this level. Waiting for a pullback with RSI cooling to the 50-60 range would offer a more favorable entry point with better downside protection.
+2026-06-04 13:55:26 [INFO] UBER HOLD - RSI: 46.1 EMA cross: BELOW
+2026-06-04 13:55:31 [INFO] AI Analysis: SKIP - Confidence: 82 - Multiple bearish indicators align against taking action here. RSI at 46.05 is trending toward oversold territory but lacks bullish momentum, sitting below the neutral 50 level. The EMA cross being BELOW confirms bearish price structure, suggesting downward momentum. The HOLD signal combined with these technical indicators offers no clear entry edge. Risk/reward is unfavorable with no confirmed reversal signals present. Better to wait for RSI recovery above 50 and a bullish EMA crossover before considering entry.
+2026-06-04 13:55:32 [INFO] GS HOLD - RSI: 75.5 EMA cross: ABOVE
+2026-06-04 13:55:36 [INFO] AI Analysis: SKIP - Confidence: 82 - RSI at 75.46 is in overbought territory (above 70), suggesting the stock is overextended and due for a pullback or consolidation. While the EMA cross being ABOVE indicates bullish momentum, entering a HOLD signal at these elevated RSI levels presents an unfavorable risk/reward ratio. Additionally, the $1089.71 price point combined with overbought conditions increases downside risk. Waiting for RSI to cool down to the 50-65 range would provide a safer entry with better upside potential.
+2026-06-04 13:55:37 [INFO] BAC HOLD - RSI: 64.5 EMA cross: ABOVE
+2026-06-04 13:55:42 [INFO] AI Analysis: SKIP - Confidence: 72 - Signal is HOLD rather than a clear BUY, offering no actionable entry trigger. While technicals are moderately supportive (price above EMA, RSI at 64.53 indicating bullish momentum without being overbought), the lack of a definitive directional signal doesn't justify initiating a new position. RSI approaching the 65-70 zone also suggests limited upside runway before potential overbought conditions. Better to wait for a confirmed breakout or pullback entry with a stronger signal.
+2026-06-04 13:55:43 [INFO] V HOLD - RSI: 48.3 EMA cross: BELOW
+2026-06-04 13:55:47 [INFO] AI Analysis: SKIP - Confidence: 82 - Multiple bearish indicators align here — RSI at 48.28 is below the neutral 50 level suggesting mild bearish momentum, and price trading BELOW the EMA cross confirms lack of bullish trend confirmation. The HOLD signal provides no actionable edge. There is no compelling technical setup to justify entering a position at this time. Better to wait for RSI to reclaim 50+ and a bullish EMA crossover before considering entry on V.
+2026-06-04 13:55:48 [INFO] MA HOLD - RSI: 40.3 EMA cross: BELOW
+2026-06-04 13:55:53 [INFO] AI Analysis: SKIP - Confidence: 82 - Multiple bearish indicators align against this trade. RSI at 40.31 indicates weakening momentum approaching oversold territory but without a confirmed reversal signal. The price trading BELOW the EMA cross confirms a bearish trend structure. The HOLD signal provides no actionable edge. Risk/reward is unfavorable with no technical confirmation of a bottom or trend reversal. Better to wait for RSI recovery above 50 and a bullish EMA crossover before considering entry on MA.
+2026-06-04 13:56:04 [INFO] UNH HOLD - RSI: 66.7 EMA cross: ABOVE
+2026-06-04 13:56:09 [INFO] AI Analysis: SKIP - Confidence: 72 - Signal is HOLD rather than a clear BUY entry trigger, offering no actionable edge. RSI at 66.74 is approaching overbought territory (nearing 70), suggesting limited upside momentum and increased reversal risk. While price is trading above the EMA (bullish structure), entering near potential overbought conditions without a confirmed breakout or pullback setup presents an unfavorable risk/reward ratio. Better to wait for either a pullback to EMA support or a confirmed RSI reset before considering entry.
+2026-06-04 13:56:09 [INFO] JNJ HOLD - RSI: 50.5 EMA cross: BELOW
+2026-06-04 13:56:14 [INFO] AI Analysis: SKIP - Confidence: 78 - No actionable edge here. The HOLD signal combined with a neutral RSI of 50.51 indicates indecision with no strong momentum in either direction. The price trading BELOW the EMA cross is a bearish technical flag, suggesting downward pressure or lack of bullish confirmation. Without a clear directional signal and with price unable to hold above key moving averages, entering this trade carries unfavorable risk/reward. Wait for either a bullish EMA crossover confirmation or an RSI showing stronger momentum (above 55-60) before considering entry.
+2026-06-04 13:56:15 [INFO] PFE HOLD - RSI: 45.1 EMA cross: BELOW
+2026-06-04 13:56:20 [INFO] AI Analysis: SKIP - Confidence: 82 - No actionable edge present. RSI at 45.15 is in neutral-to-weak territory, neither oversold enough to suggest a strong bounce nor showing bullish momentum. Price trading BELOW the EMA cross confirms a bearish trend structure, meaning the path of least resistance is downward. A HOLD signal combined with these weak technicals offers no clear entry catalyst. Risk/reward is unfavorable — entering here means fighting the trend with no confirming reversal signal. Better to wait for RSI recovery above 50 and a confirmed EMA crossover before considering a long position in PFE.
+2026-06-04 13:56:21 [INFO] XOM HOLD - RSI: 51.9 EMA cross: BELOW
+2026-06-04 13:56:24 [INFO] AI Analysis: SKIP - Confidence: 78 - The signal is HOLD rather than a clear BUY, RSI at 51.94 is neutral with no strong momentum, and price trading BELOW the EMA cross indicates bearish positioning. No compelling edge to enter a new trade under these conditions — risk/reward does not favor initiating a position.
+2026-06-04 13:56:25 [INFO] CVX HOLD - RSI: 53.1 EMA cross: BELOW
+2026-06-04 13:56:31 [INFO] AI Analysis: SKIP - Confidence: 78 - The signal is HOLD rather than a clear BUY, and the EMA cross is BELOW, indicating bearish momentum or a downtrend structure. While the RSI at 53.11 is neutral (neither overbought nor oversold), the combination of no bullish signal and price trading below the EMA provides insufficient justification to enter a new position. Waiting for a confirmed EMA crossover above and a stronger directional signal would offer a more favorable risk/reward setup.
+2026-06-04 13:56:32 [INFO] IWM HOLD - RSI: 62.3 EMA cross: ABOVE
+2026-06-04 13:56:37 [INFO] AI Analysis: SKIP - Confidence: 72 - The signal is HOLD, not a clear BUY or SELL, which provides no actionable edge for entering a new trade. While RSI at 62.26 shows moderate bullish momentum (not yet overbought) and price is trading above the EMA (bullish structure), the HOLD signal suggests the setup lacks a fresh catalyst or confirmation trigger. Entering on a HOLD signal increases risk of chasing a move that may already be extended. Better to wait for a decisive crossover signal or RSI pullback to a stronger entry zone (50-55 range) before committing capital to IWM.
+2026-06-04 13:56:38 [INFO] GLD HOLD - RSI: 41.7 EMA cross: BELOW
+2026-06-04 13:56:42 [INFO] AI Analysis: SKIP - Confidence: 82 - Multiple bearish indicators align against taking action here. RSI at 41.70 is approaching oversold territory but hasn't confirmed a reversal, suggesting continued downward pressure. Price trading BELOW the EMA cross confirms bearish momentum. The HOLD signal offers no directional conviction to justify entry. Risk/reward is unfavorable until RSI stabilizes and price reclaims the EMA, indicating a potential trend reversal.
+2026-06-04 13:56:43 [INFO] TLT HOLD - RSI: 55.5 EMA cross: ABOVE
+2026-06-04 13:56:46 [ERROR] Unexpected trading loop error: unauthorized.
+2026-06-04 13:56:48 [INFO] AI Analysis: SKIP - Confidence: 72 - The signal is HOLD, not a clear BUY or SELL trigger, making this a poor entry point for a new trade. While the technicals are mildly constructive (RSI at 55.47 suggests neutral-to-slightly-bullish momentum, and price is above EMA), there is no actionable edge here. TLT at $85.50 reflects ongoing pressure from elevated interest rate expectations, and entering on a HOLD signal without a confirmed directional catalyst increases risk without proportional reward. Wait for a stronger signal confirmation before committing capital.
+2026-06-04 13:56:49 [INFO] ARKK HOLD - RSI: 57.0 EMA cross: ABOVE
+2026-06-04 13:56:54 [INFO] AI Analysis: SKIP - Confidence: 72 - Signal is HOLD, not a clear BUY or SELL trigger — no actionable edge here. While RSI at 57 is moderately bullish (not overbought) and price is trading above the EMA (positive trend confirmation), a HOLD signal lacks the conviction needed to initiate a new position. ARKK is also a high-volatility, sentiment-driven ETF heavily exposed to speculative growth/tech names, making entry timing critical. Without a stronger momentum catalyst or breakout confirmation, the risk/reward doesn't justify a new trade entry at this point. Wait for a cleaner signal.
+2026-06-04 13:56:55 [INFO] MSTR HOLD - RSI: 31.4 EMA cross: BELOW
+2026-06-04 13:57:00 [INFO] AI Analysis: SKIP - Confidence: 72 - While the RSI at 31.37 is approaching oversold territory (suggesting a potential bounce), the signal is HOLD rather than a clear BUY, and the price trading BELOW the EMA cross indicates bearish momentum is still dominant. MSTR carries additional volatility risk due to its heavy Bitcoin correlation, which amplifies downside moves. Waiting for a confirmed EMA crossover to the upside or RSI dipping further into oversold territory with a reversal signal would provide a stronger entry confirmation. Risk/reward is not favorable enough at this stage.
+2026-06-04 13:57:01 [INFO] RIVN HOLD - RSI: 74.6 EMA cross: ABOVE
+2026-06-04 13:57:05 [INFO] AI Analysis: SKIP - Confidence: 78 - RSI at 74.60 indicates overbought conditions, suggesting the stock is overextended and due for a pullback or consolidation. While the EMA cross being ABOVE is bullish, entering a HOLD signal at these RSI levels presents poor risk/reward for a new position. Waiting for RSI to cool down to the 50-60 range would offer a more favorable entry point with reduced downside risk.
+2026-06-04 13:57:06 [INFO] SOFI HOLD - RSI: 52.1 EMA cross: ABOVE
+2026-06-04 13:57:12 [INFO] AI Analysis: SKIP - Confidence: 65 - Signal is HOLD rather than a clear BUY, offering no strong directional conviction for initiating a new position. RSI at 52.12 is neutral — not oversold enough to suggest a high-probability entry, nor showing strong bullish momentum. While price is trading above EMA (a mild positive), the lack of a confirmed bullish trigger (no EMA crossover signal, no RSI momentum push) makes this a low-edge setup. Better to wait for a cleaner entry signal such as RSI pushing above 55-60 with a confirmed bullish EMA cross before committing capital.
+2026-06-04 13:57:14 [INFO] NIO HOLD - RSI: 46.8 EMA cross: BELOW
+2026-06-04 13:57:18 [INFO] Account equity=99989.13 open_positions=2 daily_loss_pct=-0.00%
+2026-06-04 13:57:18 [INFO] AI Analysis: SKIP - Confidence: 82 - Multiple bearish indicators align against this trade. RSI at 46.75 is below the neutral 50 level, indicating weak momentum leaning bearish. Price trading BELOW the EMA cross confirms the downtrend. The signal itself is HOLD, which provides no actionable entry trigger. NIO also carries additional fundamental risk as a Chinese EV stock subject to macro headwinds, tariff pressures, and sector weakness. No compelling technical setup justifies entry at this time.
+2026-06-04 13:57:19 [INFO] AAPL HOLD - RSI: 66.9 EMA cross: ABOVE
+2026-06-04 13:57:20 [INFO] TSLA HOLD - RSI: 51.8 EMA cross: ABOVE
+2026-06-04 13:57:20 [INFO] HOOD HOLD - RSI: 56.7 EMA cross: ABOVE
+2026-06-04 13:57:20 [INFO] MSFT HOLD - RSI: 53.0 EMA cross: ABOVE
+2026-06-04 13:57:21 [INFO] AMZN HOLD - RSI: 43.4 EMA cross: BELOW
+2026-06-04 13:57:22 [INFO] NVDA HOLD - RSI: 54.9 EMA cross: ABOVE
+2026-06-04 13:57:23 [INFO] GOOGL HOLD - RSI: 49.0 EMA cross: BELOW
+2026-06-04 13:57:24 [INFO] META HOLD - RSI: 53.9 EMA cross: BELOW
+2026-06-04 13:57:25 [INFO] AI Analysis: SKIP - Confidence: 72 - Signal is HOLD, not a clear BUY/SELL trigger — no actionable edge present. While RSI at 56.74 is neutral-to-slightly-bullish and price is trading above EMA (constructive trend), the HOLD signal suggests momentum is neither accelerating nor breaking down. Entering a new position on a HOLD signal at $86.56 carries unfavorable risk/reward without a confirmed entry catalyst. Better to wait for a decisive RSI push toward 60+ with a fresh EMA crossover confirmation before committing capital.
+2026-06-04 13:57:25 [INFO] NFLX HOLD - RSI: 27.6 EMA cross: BELOW
+2026-06-04 13:57:26 [INFO] AMD HOLD - RSI: 72.4 EMA cross: ABOVE
+2026-06-04 13:57:26 [INFO] PYPL HOLD - RSI: 34.4 EMA cross: BELOW
+2026-06-04 13:57:27 [INFO] COIN HOLD - RSI: 37.3 EMA cross: BELOW
+2026-06-04 13:57:28 [INFO] SPY HOLD - RSI: 70.4 EMA cross: ABOVE
+2026-06-04 13:57:29 [INFO] QQQ HOLD - RSI: 75.6 EMA cross: ABOVE
+2026-06-04 13:57:31 [INFO] JPM SHORT - RSI: 58.4 EMA cross: BELOW
+2026-06-04 13:57:31 [INFO] Already short 6 shares of JPM
+2026-06-04 13:57:31 [INFO] AI Analysis: SKIP - Confidence: 78 - The signal is HOLD rather than a clear BUY, and the combination of RSI at 34.45 (approaching oversold but not confirmed reversal) with price trading BELOW the EMA cross suggests continued bearish momentum. While RSI nearing oversold territory could hint at a potential bounce, there is no confirmed trend reversal signal to justify entry. Risk of further downside remains elevated without a bullish confirmation trigger such as RSI recovery above 40 or a bullish EMA crossover.
+2026-06-04 13:57:32 [INFO] DIS HOLD - RSI: 39.4 EMA cross: BELOW
+2026-06-04 13:57:33 [INFO] ROKU HOLD - RSI: 54.8 EMA cross: ABOVE
+2026-06-04 13:57:33 [INFO] BA HOLD - RSI: 46.2 EMA cross: BELOW
+2026-06-04 13:57:34 [ERROR] Unexpected trading loop error: unauthorized.
+2026-06-04 13:57:34 [INFO] CRM HOLD - RSI: 54.0 EMA cross: ABOVE
+2026-06-04 13:57:35 [INFO] PLTR HOLD - RSI: 49.1 EMA cross: ABOVE
+2026-06-04 13:57:36 [INFO] SNOW HOLD - RSI: 69.4 EMA cross: ABOVE
+2026-06-04 13:57:37 [INFO] UBER HOLD - RSI: 46.0 EMA cross: BELOW
+2026-06-04 13:57:38 [INFO] GS HOLD - RSI: 75.6 EMA cross: ABOVE
+2026-06-04 13:57:39 [INFO] BAC HOLD - RSI: 64.6 EMA cross: ABOVE
+2026-06-04 13:57:40 [INFO] V HOLD - RSI: 48.4 EMA cross: BELOW
+2026-06-04 13:57:41 [INFO] MA HOLD - RSI: 40.5 EMA cross: BELOW
+2026-06-04 13:57:42 [INFO] UNH HOLD - RSI: 66.8 EMA cross: ABOVE
+2026-06-04 13:57:43 [INFO] JNJ HOLD - RSI: 50.6 EMA cross: BELOW
+2026-06-04 13:57:44 [INFO] PFE HOLD - RSI: 45.0 EMA cross: BELOW
+2026-06-04 13:58:29 [INFO] Starting trading loop
+2026-06-04 13:58:29 [INFO] Account equity=99988.62 open_positions=2 daily_loss_pct=-0.00%
+2026-06-04 13:58:31 [INFO] AAPL HOLD - RSI: 66.9 EMA cross: ABOVE
+2026-06-04 13:58:32 [INFO] TSLA HOLD - RSI: 51.8 EMA cross: ABOVE
+2026-06-04 13:58:33 [INFO] MSFT HOLD - RSI: 53.1 EMA cross: ABOVE
+2026-06-04 13:58:44 [INFO] AMZN HOLD - RSI: 43.5 EMA cross: BELOW
+2026-06-04 13:58:46 [INFO] NVDA HOLD - RSI: 54.9 EMA cross: ABOVE
+2026-06-04 13:58:47 [INFO] GOOGL HOLD - RSI: 49.0 EMA cross: BELOW
+2026-06-04 13:58:48 [INFO] META HOLD - RSI: 53.7 EMA cross: BELOW
+2026-06-04 13:58:49 [INFO] NFLX HOLD - RSI: 27.6 EMA cross: BELOW
+2026-06-04 13:59:00 [INFO] AMD HOLD - RSI: 72.4 EMA cross: ABOVE
+2026-06-04 13:59:02 [INFO] COIN HOLD - RSI: 37.4 EMA cross: BELOW
+2026-06-04 13:59:03 [INFO] SPY HOLD - RSI: 70.5 EMA cross: ABOVE
+2026-06-04 13:59:05 [INFO] QQQ HOLD - RSI: 75.8 EMA cross: ABOVE
+2026-06-04 13:59:06 [INFO] JPM SHORT - RSI: 58.4 EMA cross: BELOW
+2026-06-04 13:59:12 [INFO] AI Analysis: SKIP - Confidence: 72 - The setup lacks sufficient bearish confirmation. RSI at 58.42 is in neutral-to-bullish territory, indicating no meaningful overbought condition to justify a short entry. While the EMA cross shows price is below the EMA (bearish), the RSI reading contradicts strong downside momentum. JPM as a major financial stock also tends to be resilient, and shorting without a clearly overbought RSI (70+) or stronger confluence of bearish signals increases risk of a failed trade. Wait for RSI to push higher toward overbought levels before considering a short, or look for additional confirmation such as a breakdown below key support.
+2026-06-04 13:59:12 [INFO] Already short 6 shares of JPM
+2026-06-04 13:59:13 [INFO] DIS HOLD - RSI: 39.6 EMA cross: BELOW
+2026-06-04 13:59:15 [INFO] BA HOLD - RSI: 46.3 EMA cross: BELOW
+2026-06-04 13:59:16 [INFO] CRM HOLD - RSI: 54.1 EMA cross: ABOVE
+2026-06-04 13:59:27 [INFO] PLTR HOLD - RSI: 49.3 EMA cross: ABOVE
+2026-06-04 13:59:39 [INFO] SNOW HOLD - RSI: 69.5 EMA cross: ABOVE
+2026-06-04 13:59:40 [INFO] UBER HOLD - RSI: 45.9 EMA cross: BELOW
+2026-06-04 13:59:41 [INFO] GS HOLD - RSI: 75.6 EMA cross: ABOVE
+2026-06-04 13:59:43 [INFO] BAC HOLD - RSI: 64.7 EMA cross: ABOVE
+2026-06-04 13:59:44 [INFO] V HOLD - RSI: 48.6 EMA cross: BELOW
+2026-06-04 13:59:45 [INFO] MA HOLD - RSI: 40.5 EMA cross: BELOW
+2026-06-04 13:59:45 [INFO] UNH HOLD - RSI: 66.8 EMA cross: ABOVE
+2026-06-04 13:59:46 [INFO] JNJ HOLD - RSI: 50.3 EMA cross: BELOW
+2026-06-04 13:59:47 [INFO] PFE HOLD - RSI: 44.9 EMA cross: BELOW
+2026-06-04 13:59:48 [INFO] XOM HOLD - RSI: 52.0 EMA cross: BELOW
+2026-06-04 13:59:49 [INFO] CVX HOLD - RSI: 53.2 EMA cross: ABOVE
+2026-06-04 13:59:50 [INFO] IWM HOLD - RSI: 62.4 EMA cross: ABOVE
+2026-06-04 13:59:51 [INFO] GLD HOLD - RSI: 41.8 EMA cross: BELOW
+2026-06-04 13:59:52 [INFO] TLT HOLD - RSI: 55.4 EMA cross: ABOVE
+2026-06-04 13:59:53 [INFO] ARKK HOLD - RSI: 57.2 EMA cross: ABOVE
+2026-06-04 13:59:54 [INFO] MSTR HOLD - RSI: 31.7 EMA cross: BELOW
+2026-06-04 13:59:54 [INFO] RIVN HOLD - RSI: 74.9 EMA cross: ABOVE

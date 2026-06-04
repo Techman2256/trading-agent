@@ -181,19 +181,33 @@ def run_trading_loop(test_close: bool = False) -> None:
                     # count current short positions across account
                     current_short_positions = executor.count_short_positions()
 
+                    if signal == "HOLD":
+                        if telegram_enabled:
+                            try:
+                                msg = (
+                                    f"⏸ HOLD - {symbol}\n"
+                                    f"RSI: {details.rsi if details.rsi is not None else 0.0:.1f} | EMA: {details.ema_cross}\n"
+                                    f"🧠 AI: No AI analysis for HOLD signals"
+                                )
+                                send_telegram_message(msg, logger=logger)
+                            except Exception as e:
+                                logger.warning("Failed to send HOLD Telegram message: %s", e)
+                        continue
+
                     live_price = None
                     ai_decision = "SKIP"
                     ai_confidence = 0
                     ai_reason = "No AI analysis available"
                     try:
-                        live_price = fetch_live_price(symbol)
-                        ai_decision, ai_confidence, ai_reason = analyze_trade(
-                            symbol,
-                            signal,
-                            details.rsi,
-                            details.ema_cross,
-                            live_price,
-                        )
+                        if signal in {"STRONG BUY", "SHORT"}:
+                            live_price = fetch_live_price(symbol)
+                            ai_decision, ai_confidence, ai_reason = analyze_trade(
+                                symbol,
+                                signal,
+                                details.rsi,
+                                details.ema_cross,
+                                live_price,
+                            )
                     except Exception as ai_err:
                         logger.warning("AI analysis failed for %s: %s", symbol, ai_err)
 
@@ -203,19 +217,6 @@ def run_trading_loop(test_close: bool = False) -> None:
                         ai_confidence,
                         ai_reason,
                     )
-
-                    if signal == "HOLD":
-                        if telegram_enabled:
-                            try:
-                                msg = (
-                                    f"⏸ HOLD - {symbol}\n"
-                                    f"RSI: {details.rsi if details.rsi is not None else 0.0:.1f} | EMA: {details.ema_cross}\n"
-                                    f"🧠 AI: {ai_reason}"
-                                )
-                                send_telegram_message(msg, logger=logger)
-                            except Exception as e:
-                                logger.warning("Failed to send HOLD Telegram message: %s", e)
-                        continue
 
                     # Cover short positions when RSI dropped below threshold
                     if current_qty < 0 and risk_manager.should_cover_short(details.rsi):
