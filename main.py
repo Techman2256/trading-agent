@@ -11,8 +11,10 @@ from zoneinfo import ZoneInfo
 from config import validate_config, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 from data.market_data import SYMBOLS, fetch_historical_data, fetch_live_price
 from execution.order_executor import OrderExecutor
+from execution.options_executor import OptionsExecutor
 from risk.risk_manager import RiskManager
 from strategy.rsi_strategy import get_signal_details
+from ai.ai_analyst import analyze_trade
 import requests
 
 LOG_PATH = Path("logs") / "trades.log"
@@ -93,6 +95,7 @@ def run_trading_loop(test_close: bool = False) -> None:
     validate_config()
     logger = setup_logger()
     executor = OrderExecutor()
+    options_executor = OptionsExecutor()
     risk_manager = RiskManager()
     telegram_enabled = bool(TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID)
     if telegram_enabled:
@@ -178,6 +181,42 @@ def run_trading_loop(test_close: bool = False) -> None:
                     # count current short positions across account
                     current_short_positions = executor.count_short_positions()
 
+                    live_price = None
+                    ai_decision = "SKIP"
+                    ai_confidence = 0
+                    ai_reason = "No AI analysis available"
+                    try:
+                        live_price = fetch_live_price(symbol)
+                        ai_decision, ai_confidence, ai_reason = analyze_trade(
+                            symbol,
+                            signal,
+                            details.rsi,
+                            details.ema_cross,
+                            live_price,
+                        )
+                    except Exception as ai_err:
+                        logger.warning("AI analysis failed for %s: %s", symbol, ai_err)
+
+                    logger.info(
+                        "AI Analysis: %s - Confidence: %d - %s",
+                        ai_decision,
+                        ai_confidence,
+                        ai_reason,
+                    )
+
+                    if signal == "HOLD":
+                        if telegram_enabled:
+                            try:
+                                msg = (
+                                    f"⏸ HOLD - {symbol}\n"
+                                    f"RSI: {details.rsi if details.rsi is not None else 0.0:.1f} | EMA: {details.ema_cross}\n"
+                                    f"🧠 AI: {ai_reason}"
+                                )
+                                send_telegram_message(msg, logger=logger)
+                            except Exception as e:
+                                logger.warning("Failed to send HOLD Telegram message: %s", e)
+                        continue
+
                     # Cover short positions when RSI dropped below threshold
                     if current_qty < 0 and risk_manager.should_cover_short(details.rsi):
                         pos = executor.get_position(symbol)
@@ -217,7 +256,27 @@ def run_trading_loop(test_close: bool = False) -> None:
                         ):
                             logger.warning("Skipping buy for %s due to risk limits", symbol)
                             continue
-                        live_price = fetch_live_price(symbol)
+                        if ai_decision != "PROCEED" or ai_confidence <= 70:
+                            logger.info(
+                                "Skipping buy for %s due to AI analysis: %s Confidence: %d Reason: %s",
+                                symbol,
+                                ai_decision,
+                                ai_confidence,
+                                ai_reason,
+                            )
+                            if telegram_enabled:
+                                try:
+                                    msg = (
+                                        f"⚠️ BUY SKIPPED - {symbol}\n"
+                                        f"RSI: {details.rsi if details.rsi is not None else 0.0:.1f} | AI Confidence: {ai_confidence}%\n"
+                                        f"🧠 AI: {ai_reason}"
+                                    )
+                                    send_telegram_message(msg, logger=logger)
+                                except Exception as e:
+                                    logger.warning("Failed to send BUY SKIP Telegram message: %s", e)
+                            continue
+                        if live_price is None:
+                            live_price = fetch_live_price(symbol)
                         order_qty = risk_manager.calculate_position_size(
                             float(account.equity), live_price
                         )
@@ -235,46 +294,83 @@ def run_trading_loop(test_close: bool = False) -> None:
                             order_qty,
                             order.id,
                         )
-                        # Send Telegram notification for BUY
                         if telegram_enabled:
-                            now = datetime.now(MARKET_TZ)
+                            try:
+                                msg = (
+                                    f"🟢 BUY EXECUTED - {symbol}\n"
+                                    f"Shares: {order_qty} | Price: ${live_price:.2f}\n"
+                                    f"RSI: {details.rsi if details.rsi is not None else 0.0:.1f} | AI Confidence: {ai_confidence}%\n"
+                                    f"🧠 AI Reasoning: {ai_reason}"
+                                )
+                                send_telegram_message(msg, logger=logger)
+                            except Exception as e:
+                                logger.warning("Failed to send BUY Telegram message: %s", e)
+
+                        try:
+                            option_result = options_executor.buy_call_option(symbol, live_price)
+                            contract = option_result["contract"]
+                            strike = float(contract.get("strike_price", contract.get("strike", 0)))
+                            expiry = contract.get("expiry_date") or contract.get("expiry")
+                            logger.info(
+                                "CALL OPTION BOUGHT - %s $%.0f strike exp %s",
+                                symbol,
+                                strike,
+                                expiry,
+                            )
+                            if telegram_enabled:
+                                msg = (
+                                    f"📈 CALL OPTION - {symbol} ${strike:.0f} strike | AI Confidence: {ai_confidence}%"
+                                )
+                                send_telegram_message(msg, logger=logger)
+                        except Exception as e:
+                            logger.warning("Failed to buy call option for %s: %s", symbol, e)
 
                     elif signal == "SHORT":
-                        # open a new short position
                         if current_qty < 0:
                             logger.info("Already short %s shares of %s", abs(current_qty), symbol)
                             continue
                         if not risk_manager.can_open_short_position(current_short_positions):
                             logger.warning("Skipping short for %s due to short position limits", symbol)
                             continue
-                        live_price = fetch_live_price(symbol)
-                        # use explicit position sizing API (account_equity, price)
-                        order_qty = risk_manager.calculate_position_size(
-                            float(account.equity), live_price
-                        )
-                        if order_qty <= 0:
-                            logger.warning(
-                                "Calculated short order quantity for %s is zero; skipping",
+                        if ai_decision != "PROCEED" or ai_confidence <= 70:
+                            logger.info(
+                                "Skipping short for %s due to AI analysis: %s Confidence: %d Reason: %s",
                                 symbol,
+                                ai_decision,
+                                ai_confidence,
+                                ai_reason,
                             )
+                            if telegram_enabled:
+                                try:
+                                    msg = (
+                                        f"⚠️ SHORT SKIPPED - {symbol}\n"
+                                        f"RSI: {details.rsi if details.rsi is not None else 0.0:.1f} | AI Confidence: {ai_confidence}%\n"
+                                        f"🧠 AI: {ai_reason}"
+                                    )
+                                    send_telegram_message(msg, logger=logger)
+                                except Exception as e:
+                                    logger.warning("Failed to send SHORT SKIP Telegram message: %s", e)
                             continue
-                        order = executor.place_short_market_order(symbol, order_qty)
-                        current_open_positions += 1
-                        logger.info(
-                            "Placed SHORT SELL order for %s qty=%d id=%s",
-                            symbol,
-                            order_qty,
-                            order.id,
-                        )
-                        # Send Telegram notification for SHORT
-                        if telegram_enabled:
-                            try:
+                        if live_price is None:
+                            live_price = fetch_live_price(symbol)
+                        try:
+                            option_result = options_executor.buy_put_option(symbol, live_price)
+                            contract = option_result["contract"]
+                            strike = float(contract.get("strike_price", contract.get("strike", 0)))
+                            expiry = contract.get("expiry_date") or contract.get("expiry")
+                            logger.info(
+                                "PUT OPTION BOUGHT - %s $%.0f strike exp %s",
+                                symbol,
+                                strike,
+                                expiry,
+                            )
+                            if telegram_enabled:
                                 msg = (
-                                    f"🔴 SHORT SELL - Stock: {symbol} RSI: {details.rsi:.1f}"
+                                    f"📉 PUT OPTION - {symbol} ${strike:.0f} strike | AI Confidence: {ai_confidence}%"
                                 )
                                 send_telegram_message(msg, logger=logger)
-                            except Exception as e:
-                                logger.warning("Failed to send SHORT Telegram message: %s", e)
+                        except Exception as e:
+                            logger.warning("Failed to buy put option for %s: %s", symbol, e)
 
                     elif signal == "STRONG SELL":
                         if current_qty <= 0:
