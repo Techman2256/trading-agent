@@ -319,7 +319,7 @@ async def confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         pending_actions.pop(update.effective_chat.id, None)
 
 
-def run_telegram_command_listener() -> None:
+async def start_command_listener() -> None:
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
         logger.warning("Telegram credentials missing; command listener will not start.")
         return
@@ -338,4 +338,13 @@ def run_telegram_command_listener() -> None:
     app.add_handler(CommandHandler("confirm", confirm))
 
     logger.info("Starting Telegram command listener...")
-    app.run_polling()
+    await app.initialize()
+    await app.start()
+    await app.updater.start_polling()
+
+
+def run_telegram_command_listener() -> None:
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(start_command_listener())
+    loop.run_forever()

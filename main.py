@@ -115,6 +115,7 @@ def run_trading_loop(test_close: bool = False) -> None:
 
     logger.info("Starting trading loop")
     close_warning_sent = False
+    market_paused = False
     # track which symbols have already been sent an AI SKIP notification today
     skip_notif_day = date.today()
     skip_notified_symbols: set[str] = set()
@@ -142,16 +143,6 @@ def run_trading_loop(test_close: bool = False) -> None:
             skip_notified_symbols.clear()
             skip_notif_day = date.today()
 
-        if is_market_closed_for_day(current_time):
-            shutdown_msg = (
-                "🔴 Market closed for the day. Bot is shutting down. "
-                "Check Alpaca for today's positions."
-            )
-            logger.info("Market closed for the day. Bot shutting down.")
-            if telegram_enabled:
-                send_telegram_message(shutdown_msg, logger=logger)
-            sys.exit(0)
-
         if is_market_close_warning_time(current_time) and not close_warning_sent:
             warning_msg = "⚠️ Market closing in 5 minutes!"
             logger.info(warning_msg)
@@ -160,9 +151,23 @@ def run_trading_loop(test_close: bool = False) -> None:
             close_warning_sent = True
 
         if not is_market_open(current_time):
-            logger.info("Market is closed. Sleeping until next check.")
+            if not market_paused:
+                pause_msg = (
+                    "🔴 Market closed - scanning paused. Telegram commands still active."
+                )
+                logger.info(pause_msg)
+                if telegram_enabled:
+                    send_telegram_message(pause_msg, logger=logger)
+                market_paused = True
             time.sleep(SLEEP_SECONDS)
             continue
+
+        if market_paused:
+            resume_msg = "🟢 Market open - scanning resumed."
+            logger.info(resume_msg)
+            if telegram_enabled:
+                send_telegram_message(resume_msg, logger=logger)
+            market_paused = False
 
         try:
             account = executor.get_account()
