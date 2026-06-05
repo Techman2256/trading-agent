@@ -48,6 +48,77 @@ def setup_logger() -> logging.Logger:
     return logger
 
 
+def is_daily_summary_time(current_time: datetime) -> bool:
+    """Return True when it is 4:00pm EST on a weekday (market close)."""
+    return (
+        current_time.weekday() < 5
+        and dt_time(16, 0) <= current_time.time() < dt_time(16, 1)
+    )
+
+
+def send_daily_summary(
+    executor: OrderExecutor, logger: logging.Logger, telegram_enabled: bool
+) -> None:
+    """Send a daily P&L summary via Telegram at market close."""
+    try:
+        account = executor.get_account()
+        positions = executor.list_positions()
+        
+        # Calculate today's P&L
+        equity = float(account.equity)
+        last_equity = float(account.last_equity)
+        daily_pnl = equity - last_equity
+        daily_pnl_pct = (daily_pnl / last_equity * 100) if last_equity > 0 else 0.0
+        
+        # Format open positions
+        positions_text = ""
+        if positions:
+            for pos in positions:
+                try:
+                    qty = int(pos.qty)
+                    symbol = pos.symbol
+                    market_value = float(pos.market_value)
+                    unrealized_pl = float(pos.unrealized_pl)
+                    
+                    position_type = "short" if qty < 0 else ""
+                    qty_display = abs(qty)
+                    position_type_str = f"(short) " if position_type else ""
+                    
+                    positions_text += f"- {symbol}: {qty_display} shares {position_type_str}| P&L: ${unrealized_pl:.2f}\n"
+                except Exception as e:
+                    logger.warning("Failed to format position %s: %s", symbol, e)
+        
+        if not positions_text:
+            positions_text = "- None\n"
+        
+        # Format message
+        current_date = datetime.now(MARKET_TZ).strftime("%B %-d %Y")
+        pnl_sign = "+" if daily_pnl >= 0 else ""
+        
+        summary_msg = (
+            f"📊 DAILY TRADING SUMMARY - {current_date}\n"
+            f"━━━━━━━━━━━━━━━━━━━━\n"
+            f"💰 Portfolio Value: ${equity:.2f}\n"
+            f"📈 Today's P&L: {pnl_sign}${daily_pnl:.2f} ({pnl_sign}{daily_pnl_pct:.2f}%)\n"
+            f"━━━━━━━━━━━━━━━━━━━━\n"
+            f"📂 OPEN POSITIONS:\n"
+            f"{positions_text}"
+            f"━━━━━━━━━━━━━━━━━━━━\n"
+            f"🔄 TRADES TODAY: {len(positions)}\n"
+            f"━━━━━━━━━━━━━━━━━━━━\n"
+            f"🤖 Bot Status: ONLINE\n"
+            f"Next scan: Tomorrow 9:30am EST"
+        )
+        
+        logger.info("Sending daily summary at market close")
+        if telegram_enabled:
+            send_telegram_message(summary_msg, logger=logger)
+        else:
+            logger.info(summary_msg)
+    except Exception as e:
+        logger.exception("Failed to send daily summary: %s", e)
+
+
 def is_market_open(current_time: datetime) -> bool:
     """Return True when the current time is within US market hours."""
     return (
@@ -115,6 +186,7 @@ def run_trading_loop(test_close: bool = False) -> None:
 
     logger.info("Starting trading loop")
     close_warning_sent = False
+    daily_summary_sent = False
     market_paused = False
     # track which symbols have already been sent an AI SKIP notification today
     skip_notif_day = date.today()
@@ -126,6 +198,8 @@ def run_trading_loop(test_close: bool = False) -> None:
         logger.info(warning_msg)
         if telegram_enabled:
             send_telegram_message(warning_msg, logger=logger)
+
+        send_daily_summary(executor, logger, telegram_enabled)
 
         shutdown_msg = (
             "🔴 Market closed for the day. Bot is shutting down. "
@@ -142,6 +216,7 @@ def run_trading_loop(test_close: bool = False) -> None:
         if date.today() != skip_notif_day:
             skip_notified_symbols.clear()
             skip_notif_day = date.today()
+            daily_summary_sent = False
 
         if is_market_close_warning_time(current_time) and not close_warning_sent:
             warning_msg = "⚠️ Market closing in 5 minutes!"
@@ -149,6 +224,10 @@ def run_trading_loop(test_close: bool = False) -> None:
             if telegram_enabled:
                 send_telegram_message(warning_msg, logger=logger)
             close_warning_sent = True
+
+        if is_daily_summary_time(current_time) and not daily_summary_sent:
+            send_daily_summary(executor, logger, telegram_enabled)
+            daily_summary_sent = True
 
         if not is_market_open(current_time):
             if not market_paused:
