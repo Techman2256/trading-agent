@@ -5168,3 +5168,9 @@
 2026-06-04 23:05:21 [INFO] Telegram command listener started in background thread
 2026-06-04 23:05:21 [INFO] Starting trading loop
 2026-06-04 23:05:21 [INFO] 🔴 Market closed - scanning paused. Telegram commands still active.
+2026-06-05 12:47:28 [INFO] Telegram command listener started in background thread
+2026-06-05 12:47:28 [INFO] Starting trading loop
+2026-06-05 12:47:28 [INFO] Market close test mode active: simulating 3:55pm warning and 4:00pm shutdown.
+2026-06-05 12:47:28 [INFO] ⚠️ Market closing in 5 minutes!
+2026-06-05 12:47:29 [INFO] Sending daily summary at market close
+2026-06-05 12:47:30 [INFO] Market closed for the day. Bot shutting down.
