@@ -51,6 +51,9 @@ def _normalize_chat_id(chat_id: int | str | None) -> str | None:
 def _authorized(chat_id: int | None) -> bool:
     normalized_env_id = _normalize_chat_id(TELEGRAM_CHAT_ID)
     normalized_chat_id = _normalize_chat_id(chat_id)
+    logger.info(
+        f"Auth check - incoming: {repr(normalized_chat_id)} stored: {repr(normalized_env_id)}"
+    )
     if not normalized_env_id or not normalized_chat_id:
         return False
     return normalized_env_id == normalized_chat_id
