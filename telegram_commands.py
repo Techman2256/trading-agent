@@ -38,13 +38,22 @@ class PendingAction:
     price: float | None = None
 
 
-def _authorized(chat_id: int | None) -> bool:
-    if not TELEGRAM_CHAT_ID or chat_id is None:
-        return False
+def _normalize_chat_id(chat_id: int | str | None) -> str | None:
+    if chat_id is None:
+        return None
     try:
-        return int(TELEGRAM_CHAT_ID) == int(chat_id)
-    except ValueError:
-        return str(chat_id) == str(TELEGRAM_CHAT_ID)
+        return str(int(str(chat_id).strip()))
+    except (ValueError, TypeError):
+        normalized = str(chat_id).strip()
+        return normalized if normalized else None
+
+
+def _authorized(chat_id: int | None) -> bool:
+    normalized_env_id = _normalize_chat_id(TELEGRAM_CHAT_ID)
+    normalized_chat_id = _normalize_chat_id(chat_id)
+    if not normalized_env_id or not normalized_chat_id:
+        return False
+    return normalized_env_id == normalized_chat_id
 
 
 async def _reply(update: Update, text: str) -> None:
