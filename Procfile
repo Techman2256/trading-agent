@@ -1,1 +1,1 @@
-worker: python3 main.py
+worker: python3 webhook.py & python3 main.py
