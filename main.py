@@ -9,11 +9,11 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from config import validate_config, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
-from data.market_data import SYMBOLS, fetch_historical_data, fetch_live_price
+from data.market_data import SYMBOLS, fetch_live_price, fetch_multi_timeframe_data
 from execution.order_executor import OrderExecutor
 from execution.options_executor import OptionsExecutor
 from risk.risk_manager import RiskManager
-from strategy.rsi_strategy import get_signal_details
+from strategy.rsi_strategy import get_mtf_signal
 from ai.ai_analyst import analyze_trade
 import requests
 
@@ -173,15 +173,25 @@ def run_trading_loop(test_close: bool = False) -> None:
 
             for symbol in SYMBOLS:
                 try:
-                    historical = fetch_historical_data(symbol, period="60d", interval="1d")
-                    details = get_signal_details(historical)
-                    signal = details.signal
-                    logger.info(
-                        "%s %s - RSI: %.1f EMA cross: %s",
+                    timeframe_data = fetch_multi_timeframe_data(symbol)
+                    mtf_details = get_mtf_signal(
                         symbol,
+                        timeframe_data["1h"],
+                        timeframe_data["4h"],
+                        timeframe_data["1d"],
+                    )
+                    signal = mtf_details.signal
+                    logger.info(
+                        "%s - 1H: RSI %.1f EMA %s | 4H: RSI %.1f EMA %s | 1D: RSI %.1f EMA %s | Support: $%.2f → %s",
+                        symbol,
+                        mtf_details.tf_1h.rsi if mtf_details.tf_1h.rsi is not None else 0.0,
+                        mtf_details.tf_1h.ema_cross,
+                        mtf_details.tf_4h.rsi if mtf_details.tf_4h.rsi is not None else 0.0,
+                        mtf_details.tf_4h.ema_cross,
+                        mtf_details.tf_1d.rsi if mtf_details.tf_1d.rsi is not None else 0.0,
+                        mtf_details.tf_1d.ema_cross,
+                        mtf_details.support if mtf_details.support is not None else 0.0,
                         signal,
-                        details.rsi if details.rsi is not None else 0.0,
-                        details.ema_cross,
                     )
 
                     current_qty = executor.get_position_qty(symbol)
@@ -201,8 +211,14 @@ def run_trading_loop(test_close: bool = False) -> None:
                             ai_decision, ai_confidence, ai_reason = analyze_trade(
                                 symbol,
                                 signal,
-                                details.rsi,
-                                details.ema_cross,
+                                mtf_details.tf_1h.rsi,
+                                mtf_details.tf_1h.ema_cross,
+                                mtf_details.tf_4h.rsi,
+                                mtf_details.tf_4h.ema_cross,
+                                mtf_details.tf_1d.rsi,
+                                mtf_details.tf_1d.ema_cross,
+                                mtf_details.support,
+                                mtf_details.resistance,
                                 live_price,
                             )
                     except Exception as ai_err:

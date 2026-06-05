@@ -71,6 +71,15 @@ def fetch_historical_data(
     return data
 
 
+def fetch_multi_timeframe_data(symbol: str) -> Dict[str, pd.DataFrame]:
+    """Fetch 1H, 4H, and 1D historical data for a symbol."""
+    return {
+        "1h": fetch_historical_data(symbol, period="30d", interval="1h"),
+        "4h": fetch_historical_data(symbol, period="60d", interval="4h"),
+        "1d": fetch_historical_data(symbol, period="60d", interval="1d"),
+    }
+
+
 def fetch_live_price(symbol: str) -> float:
     """Fetch the latest live price for a symbol using yfinance."""
     ticker = yf.Ticker(symbol)
