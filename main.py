@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import logging
 import sys
+import threading
 import time
 from datetime import datetime, time as dt_time, date
 from pathlib import Path
@@ -15,6 +16,7 @@ from execution.options_executor import OptionsExecutor
 from risk.risk_manager import RiskManager
 from strategy.rsi_strategy import get_mtf_signal
 from ai.ai_analyst import analyze_trade
+from telegram_commands import run_telegram_command_listener
 import requests
 
 LOG_PATH = Path("logs") / "trades.log"
@@ -104,6 +106,10 @@ def run_trading_loop(test_close: bool = False) -> None:
             send_telegram_message(startup_msg, logger=logger)
         except Exception as e:
             logger.warning("Failed to send startup Telegram message: %s", e)
+
+        thread = threading.Thread(target=run_telegram_command_listener, daemon=True)
+        thread.start()
+        logger.info("Telegram command listener started in background thread")
     else:
         logger.info("Telegram credentials not set; skipping Telegram notifications")
 
