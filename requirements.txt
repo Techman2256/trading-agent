@@ -7,5 +7,7 @@ sqlalchemy
 apscheduler
 streamlit
 python-dotenv
-requests
 anthropic
+requests
+python-telegram-bot
+pytest
