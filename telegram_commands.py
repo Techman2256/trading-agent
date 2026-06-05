@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-import asyncio
 import logging
+import time
 from dataclasses import dataclass
-from typing import Any
+from functools import wraps
+from typing import Any, Callable, Coroutine
 
 from config import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 from data.market_data import fetch_live_price, fetch_multi_timeframe_data
@@ -13,7 +14,7 @@ from risk.risk_manager import RiskManager
 from strategy.rsi_strategy import get_mtf_signal
 from ai.ai_analyst import analyze_trade
 from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+from telegram.ext import Application, ApplicationBuilder, CommandHandler, ContextTypes
 
 logger = logging.getLogger("telegram_commands")
 logger.setLevel(logging.INFO)
@@ -37,8 +38,8 @@ class PendingAction:
     price: float | None = None
 
 
-def _authorized(chat_id: int) -> bool:
-    if not TELEGRAM_CHAT_ID:
+def _authorized(chat_id: int | None) -> bool:
+    if not TELEGRAM_CHAT_ID or chat_id is None:
         return False
     try:
         return int(TELEGRAM_CHAT_ID) == int(chat_id)
@@ -47,16 +48,47 @@ def _authorized(chat_id: int) -> bool:
 
 
 async def _reply(update: Update, text: str) -> None:
-    if update.effective_chat:
-        await update.effective_chat.send_message(text)
+    try:
+        if update.effective_chat:
+            await update.effective_chat.send_message(text)
+        elif update.message:
+            await update.message.reply_text(text)
+        else:
+            logger.warning("Unable to reply: no chat or message available on update %s", update)
+    except Exception as exc:
+        logger.exception("Failed to send Telegram reply: %s", exc)
 
 
 async def _not_authorized(update: Update) -> None:
+    logger.warning("Unauthorized Telegram access attempt from chat_id=%s", update.effective_chat.id if update.effective_chat else None)
     await _reply(update, "Unauthorized chat. This bot only responds to the configured Telegram chat ID.")
 
 
+async def _handle_telegram_error(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    logger.exception("Telegram handler error for update %s: %s", update, context.error if hasattr(context, "error") else None)
+
+
+CommandHandlerFunc = Callable[[Update, ContextTypes.DEFAULT_TYPE], Coroutine[Any, Any, None]]
+
+
+def _with_command_error_logging(handler: CommandHandlerFunc) -> CommandHandlerFunc:
+    @wraps(handler)
+    async def wrapper(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        try:
+            await handler(update, context)
+        except Exception as exc:
+            logger.exception("Telegram command /%s failed", handler.__name__)
+            if update and update.effective_chat:
+                try:
+                    await _reply(update, f"Sorry, /{handler.__name__} failed: {exc}")
+                except Exception:
+                    logger.exception("Failed to send fallback error reply for /%s", handler.__name__)
+    return wrapper
+
+
+@_with_command_error_logging
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    if not _authorized(update.effective_chat.id):
+    if not _authorized(update.effective_chat.id if update.effective_chat else None):
         return await _not_authorized(update)
 
     msg = (
@@ -75,8 +107,9 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     await _reply(update, msg)
 
 
+@_with_command_error_logging
 async def status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    if not _authorized(update.effective_chat.id):
+    if not _authorized(update.effective_chat.id if update.effective_chat else None):
         return await _not_authorized(update)
 
     account = order_executor.get_account()
@@ -89,8 +122,9 @@ async def status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await _reply(update, msg)
 
 
+@_with_command_error_logging
 async def positions(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    if not _authorized(update.effective_chat.id):
+    if not _authorized(update.effective_chat.id if update.effective_chat else None):
         return await _not_authorized(update)
 
     positions = order_executor.list_positions()
@@ -105,8 +139,9 @@ async def positions(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await _reply(update, "\n".join(lines))
 
 
+@_with_command_error_logging
 async def pnl(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    if not _authorized(update.effective_chat.id):
+    if not _authorized(update.effective_chat.id if update.effective_chat else None):
         return await _not_authorized(update)
 
     account = order_executor.get_account()
@@ -138,8 +173,9 @@ async def _run_ai_analysis(symbol: str, signal: str, price: float) -> tuple[str,
     )
 
 
+@_with_command_error_logging
 async def buy(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    if not _authorized(update.effective_chat.id):
+    if not _authorized(update.effective_chat.id if update.effective_chat else None):
         return await _not_authorized(update)
 
     if len(context.args) < 2:
@@ -172,8 +208,9 @@ async def buy(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await _reply(update, f"BUY EXECUTED - {symbol} {shares} shares at order {order.id}")
 
 
+@_with_command_error_logging
 async def sell(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    if not _authorized(update.effective_chat.id):
+    if not _authorized(update.effective_chat.id if update.effective_chat else None):
         return await _not_authorized(update)
 
     if len(context.args) < 1:
@@ -188,8 +225,9 @@ async def sell(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await _reply(update, f"SELL EXECUTED - {symbol} {qty} shares at order {order.id}")
 
 
+@_with_command_error_logging
 async def short(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    if not _authorized(update.effective_chat.id):
+    if not _authorized(update.effective_chat.id if update.effective_chat else None):
         return await _not_authorized(update)
 
     if len(context.args) < 1:
@@ -221,8 +259,9 @@ async def short(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await _reply(update, f"SHORT EXECUTED - {symbol} {qty} shares at order {order.id}")
 
 
+@_with_command_error_logging
 async def cover(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    if not _authorized(update.effective_chat.id):
+    if not _authorized(update.effective_chat.id if update.effective_chat else None):
         return await _not_authorized(update)
 
     if len(context.args) < 1:
@@ -272,20 +311,23 @@ async def _preview_option(
     )
 
 
+@_with_command_error_logging
 async def call_option(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if len(context.args) < 1:
         return await _reply(update, "Usage: /call SYMBOL")
     await _preview_option(update, "call", context.args[0].upper())
 
 
+@_with_command_error_logging
 async def put_option(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if len(context.args) < 1:
         return await _reply(update, "Usage: /put SYMBOL")
     await _preview_option(update, "put", context.args[0].upper())
 
 
+@_with_command_error_logging
 async def confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    if not _authorized(update.effective_chat.id):
+    if not _authorized(update.effective_chat.id if update.effective_chat else None):
         return await _not_authorized(update)
 
     pending = pending_actions.get(update.effective_chat.id)
@@ -319,11 +361,7 @@ async def confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         pending_actions.pop(update.effective_chat.id, None)
 
 
-async def start_command_listener() -> None:
-    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
-        logger.warning("Telegram credentials missing; command listener will not start.")
-        return
-
+def _build_telegram_app() -> Application:
     app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
     app.add_handler(CommandHandler("help", help_command))
     app.add_handler(CommandHandler("status", status))
@@ -336,15 +374,20 @@ async def start_command_listener() -> None:
     app.add_handler(CommandHandler("call", call_option))
     app.add_handler(CommandHandler("put", put_option))
     app.add_handler(CommandHandler("confirm", confirm))
-
-    logger.info("Starting Telegram command listener...")
-    await app.initialize()
-    await app.start()
-    await app.updater.start_polling()
+    app.add_error_handler(_handle_telegram_error)
+    return app
 
 
 def run_telegram_command_listener() -> None:
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(start_command_listener())
-    loop.run_forever()
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        logger.warning("Telegram credentials missing; command listener will not start.")
+        return
+
+    while True:
+        try:
+            app = _build_telegram_app()
+            logger.info("Starting Telegram command listener...")
+            app.run_polling(stop_signals=None)
+        except Exception as exc:
+            logger.exception("Telegram command listener crashed unexpectedly: %s", exc)
+            time.sleep(5)
