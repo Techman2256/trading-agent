@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import os
 import requests
 from flask import Flask, request, jsonify
 
@@ -130,5 +131,6 @@ def webhook():
 
 
 if __name__ == "__main__":
-    # Run Flask on port 8080
-    app.run(host="0.0.0.0", port=8080)
+    # Use PORT env var (required by Railway); default to 8080 for local testing
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port)
