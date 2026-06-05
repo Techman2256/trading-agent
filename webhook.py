@@ -12,10 +12,33 @@ from ai.ai_analyst import analyze_trade
 from execution.order_executor import OrderExecutor
 from execution.options_executor import OptionsExecutor
 from risk.risk_manager import RiskManager
+import threading
 
 app = Flask(__name__)
 logger = logging.getLogger("webhook")
 logger.setLevel(logging.INFO)
+
+
+def start_trading_bot() -> None:
+    """Start the main trading loop in a background daemon thread."""
+
+    def _run() -> None:
+        try:
+            from main import run_trading_loop
+
+            logger.info("Starting trading bot in background thread")
+            # Run trading loop (this will block inside the thread)
+            run_trading_loop()
+        except Exception as exc:
+            logger.exception("Trading bot thread crashed: %s", exc)
+
+    thread = threading.Thread(target=_run, daemon=True, name="trading-bot-thread")
+    thread.start()
+    logger.info("Trading bot thread started")
+
+
+# Start trading bot when this module is imported/run so Railway (single process) runs both
+start_trading_bot()
 
 
 def send_telegram_message(text: str) -> bool:
