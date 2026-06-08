@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 import anthropic
+from .news_analyst import get_news_sentiment
 
 # Load ANTHROPIC_API_KEY from the repository .env file if present.
 env_path = Path(__file__).resolve().parent.parent / ".env"
@@ -26,13 +27,16 @@ def analyze_trade(
     support: float | None,
     resistance: float | None,
     price: float,
-) -> tuple[str, int, str]:
+) -> tuple[str, int, str, str, int, str]:
     """Ask Claude to analyze whether to proceed with a proposed trade."""
     if rsi_1h is None or rsi_4h is None or rsi_1d is None:
         raise ValueError("All timeframe RSI values must be provided for AI trade analysis")
 
     support_text = f"${support:.2f}" if support is not None else "N/A"
     resistance_text = f"${resistance:.2f}" if resistance is not None else "N/A"
+
+    # Get recent news sentiment first and include it in the analysis prompt
+    news_sentiment, news_confidence, news_summary = get_news_sentiment(symbol)
 
     prompt = (
         f"{anthropic.HUMAN_PROMPT}You are an experienced trading analyst. "
@@ -49,7 +53,9 @@ def analyze_trade(
         f"Support: {support_text}\n"
         f"Resistance: {resistance_text}\n"
         f"Price: ${price:.2f}\n"
-        f"{anthropic.AI_PROMPT}"
+        f"News Sentiment: {news_sentiment} (Confidence: {news_confidence}%)\n"
+        f"Latest: {news_summary}\n"
+        f"Consider the news sentiment when making your decision.{anthropic.AI_PROMPT}"
     )
 
     response = client.messages.create(
@@ -84,7 +90,16 @@ def analyze_trade(
         elif key == "REASON":
             reason = value
 
-    return decision, confidence, reason
+    # Factor news sentiment into the final confidence
+    try:
+        if news_sentiment == "BULLISH":
+            confidence = min(100, confidence + 10)
+        elif news_sentiment == "BEARISH":
+            confidence = max(0, confidence - 10)
+    except Exception:
+        pass
+
+    return decision, confidence, reason, news_sentiment, news_confidence, news_summary
 
 
 def test_anthropic_connection() -> None:

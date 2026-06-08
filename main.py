@@ -187,6 +187,7 @@ def run_trading_loop(test_close: bool = False) -> None:
     logger.info("Starting trading loop")
     close_warning_sent = False
     daily_summary_sent = False
+    morning_message_sent = False
     market_paused = False
     # track which symbols have already been sent an AI SKIP notification today
     skip_notif_day = date.today()
@@ -217,6 +218,34 @@ def run_trading_loop(test_close: bool = False) -> None:
             skip_notified_symbols.clear()
             skip_notif_day = date.today()
             daily_summary_sent = False
+            morning_message_sent = False
+
+        # Morning open message: exactly 9:30am EST on weekdays
+        if (
+            current_time.weekday() < 5
+            and dt_time(9, 30) <= current_time.time() < dt_time(9, 31)
+            and not morning_message_sent
+        ):
+            try:
+                account = executor.get_account()
+                equity = float(account.equity) if hasattr(account, "equity") else 0.0
+            except Exception:
+                equity = 0.0
+
+            morning_msg = (
+                "🌅 Good morning! Market is now OPEN\n"
+                f"📊 Scanning {len(SYMBOLS)} stocks for opportunities\n"
+                f"💰 Portfolio: ${equity:,.2f}\n"
+                "📈 Strategy: RSI + EMA + MTF (1H/4H/1D)\n"
+                "🤖 AI Brain: ACTIVE\n"
+                "Let's make some money!"
+            )
+            logger.info("Sending morning market open message")
+            if telegram_enabled:
+                send_telegram_message(morning_msg, logger=logger)
+            else:
+                logger.info(morning_msg)
+            morning_message_sent = True
 
         if is_market_close_warning_time(current_time) and not close_warning_sent:
             warning_msg = "⚠️ Market closing in 5 minutes!"
@@ -295,10 +324,20 @@ def run_trading_loop(test_close: bool = False) -> None:
                     ai_decision = "SKIP"
                     ai_confidence = 0
                     ai_reason = "No AI analysis available"
+                    news_sentiment = "NEUTRAL"
+                    news_confidence = 0
+                    news_summary = ""
                     try:
                         if signal in {"STRONG BUY", "SHORT"}:
                             live_price = fetch_live_price(symbol)
-                            ai_decision, ai_confidence, ai_reason = analyze_trade(
+                            (
+                                ai_decision,
+                                ai_confidence,
+                                ai_reason,
+                                news_sentiment,
+                                news_confidence,
+                                news_summary,
+                            ) = analyze_trade(
                                 symbol,
                                 signal,
                                 mtf_details.tf_1h.rsi,
@@ -374,6 +413,7 @@ def run_trading_loop(test_close: bool = False) -> None:
                                         msg = (
                                             f"⚠️ BUY SKIPPED - {symbol}\n"
                                             f"RSI: {details.rsi if details.rsi is not None else 0.0:.1f} | AI Confidence: {ai_confidence}%\n"
+                                            f"News Sentiment: {news_sentiment} ({news_confidence}%)\n"
                                             f"🧠 AI: {ai_reason}"
                                         )
                                         send_telegram_message(msg, logger=logger)
@@ -406,6 +446,8 @@ def run_trading_loop(test_close: bool = False) -> None:
                                     f"🟢 BUY EXECUTED - {symbol}\n"
                                     f"Shares: {order_qty} | Price: ${live_price:.2f}\n"
                                     f"RSI: {details.rsi if details.rsi is not None else 0.0:.1f} | AI Confidence: {ai_confidence}%\n"
+                                    f"News Sentiment: {news_sentiment} ({news_confidence}%)\n"
+                                    f"Latest: {news_summary}\n"
                                     f"🧠 AI Reasoning: {ai_reason}"
                                 )
                                 send_telegram_message(msg, logger=logger)
@@ -452,6 +494,7 @@ def run_trading_loop(test_close: bool = False) -> None:
                                         msg = (
                                             f"⚠️ SHORT SKIPPED - {symbol}\n"
                                             f"RSI: {details.rsi if details.rsi is not None else 0.0:.1f} | AI Confidence: {ai_confidence}%\n"
+                                            f"News Sentiment: {news_sentiment} ({news_confidence}%)\n"
                                             f"🧠 AI: {ai_reason}"
                                         )
                                         send_telegram_message(msg, logger=logger)
