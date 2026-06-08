@@ -13,3 +13,4 @@ python-telegram-bot
 pytest
 flask
 gunicorn
+plotly
